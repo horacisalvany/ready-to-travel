@@ -42,4 +42,4 @@ testem.log
 Thumbs.db
 
 # Recorded data
-package-lock.json
+# package-lock.json
