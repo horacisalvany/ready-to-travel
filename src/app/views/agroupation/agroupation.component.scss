@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Grape+Nuts&family=Norican&display=swap");
+/* CSS taken from this websites:
+- https://codepen.io/michellebarker/pen/jOzOqNg
+- https://codepen.io/wheatup/pen/GRyxmRb
+- more examples: https://freefrontend.com/css-lists/ */
+
+h1 {
+  font-family: "Norican", cursive;
+  color: saddlebrown;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  @media only screen and (orientation: landscape) {
+    font-size: 4rem;
+    margin: 2rem;
+    padding-bottom: 24px;
+
+    &::before,
+    &::after {
+      content: "";
+      display: block;
+      width: 5rem;
+      height: 2px;
+      background-color: currentColor;
+      margin: 0 1rem;
+    }
+  }
+}
+
+h2 {
+  font-size: 16px;
+  margin-bottom: 0px;
+  @media only screen and (orientation: landscape) {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+}
+
+mat-list-item {
+  text-align: center;
+  @media only screen and (orientation: landscape) {
+    text-align: left;
+  }
+  &:hover {
+    background-color: lightblue;
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.material-icons {
+  font-size: 48px;
+  color: #888;
+  right: 0;
+  position: fixed;
+  top: 50%;
+  @media only screen and (orientation: landscape) {
+    top: auto;
+    right: 100px;
+    font-size: 100px;
+
+    &:hover {
+      color: red;
+    }
+  }
+  .cdk-drag-placeholder {
+    display: none;
+  }
+}
