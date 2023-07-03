@@ -9,6 +9,6 @@ import { GroupItems } from './group-items.model';
 export class GroupItemsComponent {
   groupItems: GroupItems = {
     title: 'Makeup bag',
-    items: ['toothbrush', 'Razor blade', 'ear plugs', 'Dormidina'],
+    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
   };
 }
