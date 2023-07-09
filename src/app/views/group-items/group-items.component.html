@@ -1,5 +1,9 @@
-<mat-list role="list">
-  <mat-list-item *ngFor="let item of groupItems.items" role="listitem"
-    >{{ item }}
-  </mat-list-item>
-</mat-list>
+<mat-grid-list
+  [cols]="breakpoint"
+  rowHeight="2:0.5"
+  (window:resize)="onResize()"
+>
+  <mat-grid-tile *ngFor="let item of groupItems.items" role="listitem">{{
+    item
+  }}</mat-grid-tile>
+</mat-grid-list>

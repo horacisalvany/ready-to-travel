@@ -1,10 +1,8 @@
 /* CSS taken from this website: https://codepen.io/michellebarker/pen/jOzOqNg 
 more examples here: https://freefrontend.com/css-lists/ */
 
-mat-list {
+mat-grid-list {
   list-style-position: inside;
-  width: 600px;
-  max-width: 100%;
   background: white;
   box-shadow: 0.25rem 0.25rem 0.75rem rgb(0 0 0 / 0.15);
   padding: 0;
@@ -12,18 +10,19 @@ mat-list {
   border-radius: 0.1rem;
 }
 
-mat-list-item {
+mat-grid-tile {
   padding: 0 0 0 1rem;
 }
 
-mat-list-item:not(:last-child) {
+mat-grid-tile:not(:last-child) {
   border-bottom: 1px solid lightblue;
+  border-right: 1px solid lightblue;
 }
 
-mat-list-item:first-child {
+mat-grid-tile:first-child {
   margin-top: 1rem;
 }
 
-mat-list-item:last-child {
+mat-grid-tile:last-child {
   margin-bottom: 1rem;
 }
