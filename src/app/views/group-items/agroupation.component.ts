@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { items } from './group-items.mock';
-import { GroupItems } from './group-items.model';
+import { Agroupation } from './agroupation';
+import { agroupations } from './agroupation.mock';
 
 @Component({
-  selector: 'app-group-items',
-  templateUrl: './group-items.component.html',
-  styleUrls: ['./group-items.component.scss'],
+  selector: 'agroupation',
+  templateUrl: './agroupation.component.html',
+  styleUrls: ['./agroupation.component.scss'],
 })
-export class GroupItemsComponent implements OnInit {
+export class AgroupationComponent implements OnInit {
   breakpoint: number = 1;
-  groupItems: GroupItems = {
+  groupItems: Agroupation = {
     title: 'Makeup bag',
-    items: items,
+    items: agroupations,
   };
 
   ngOnInit() {

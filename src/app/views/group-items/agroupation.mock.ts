@@ -1,4 +1,4 @@
-export const items = [
+export const agroupations = [
   'Toothbrush',
   'Razor blade',
   'Ear plugs',

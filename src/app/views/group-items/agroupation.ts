@@ -1,4 +1,4 @@
-export interface GroupItems {
+export interface Agroupation {
   title: string;
   items: string[];
 }
