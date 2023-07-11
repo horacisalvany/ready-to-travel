@@ -1,17 +1,45 @@
-/* CSS taken from this website: https://codepen.io/michellebarker/pen/jOzOqNg 
-more examples here: https://freefrontend.com/css-lists/ */
+@import url("https://fonts.googleapis.com/css2?family=Grape+Nuts&family=Norican&display=swap");
+/* CSS taken from this websites: 
+- https://codepen.io/michellebarker/pen/jOzOqNg
+- https://codepen.io/wheatup/pen/GRyxmRb 
+- more examples: https://freefrontend.com/css-lists/ */
+
+h1 {
+  margin: 2rem;
+  font-family: "Norican", cursive;
+  color: saddlebrown;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  @media only screen and (orientation: landscape) {
+    font-size: 4rem;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    display: block;
+    width: 5rem;
+    height: 2px;
+    background-color: currentColor;
+    margin: 0 1rem;
+  }
+}
 
 mat-grid-list {
   list-style-position: inside;
   background: white;
-  box-shadow: 0.25rem 0.25rem 0.75rem rgb(0 0 0 / 0.15);
+  // box-shadow: 0.25rem 0.25rem 0.75rem rgb(0 0 0 / 0.15);
   padding: 0;
   margin: 0;
   border-radius: 0.1rem;
 }
 
 mat-grid-tile {
-  padding: 0 0 0 1rem;
+  &:hover {
+    background-color: lightblue;
+  }
 }
 
 mat-grid-tile:not(:last-child) {
