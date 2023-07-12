@@ -14,4 +14,8 @@ export const agruoupations: Agroupation[] = [
       'Laptop bag (fan, charger, wood support, pen, mouse, keyboard)',
     ],
   },
+  {
+    title: 'Leisure',
+    items: ['Books', 'SurfSkate', 'Frisbi', 'Hammock'],
+  },
 ];

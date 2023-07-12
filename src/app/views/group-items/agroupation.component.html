@@ -1,15 +1,23 @@
 <h1>Agroupations</h1>
-<div *ngFor="let agroupation of agroupations; let i = index" class="main-table">
-  <h2>{{ agroupation.title }}</h2>
-  <hr color="#add8e6" style="margin-bottom: 0" />
-  <mat-grid-list
-    [cols]="breakpoint"
-    rowHeight="2:0.5"
-    (window:resize)="onResize()"
-  >
-    <mat-grid-tile *ngFor="let item of agroupations[i].items" role="listitem">{{
-      item
-    }}</mat-grid-tile>
-  </mat-grid-list>
-  <hr color="#add8e6" style="margin-top: 0" />
+<div cdkDropListGroup>
+  <div *ngFor="let agroupation of agroupations; let i = index" class="main-tab">
+    <h2>{{ agroupation.title }}</h2>
+    <hr color="#add8e6" style="margin-bottom: 0" />
+    <mat-grid-list
+      cdkDropList
+      [cdkDropListData]="agroupation.items"
+      [cols]="breakpoint"
+      rowHeight="4:0.5"
+      (window:resize)="onResize()"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <mat-grid-tile
+        cdkDrag
+        *ngFor="let item of agroupation.items"
+        role="listitem"
+        >{{ item }}</mat-grid-tile
+      >
+    </mat-grid-list>
+    <hr color="#add8e6" style="margin-top: 0" />
+  </div>
 </div>

@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -9,7 +10,7 @@ import { MainMenuComponent } from './views/main-menu/main-menu.component';
 
 @NgModule({
   declarations: [AppComponent, MainMenuComponent, AgroupationComponent],
-  imports: [BrowserModule, AppRoutingModule, MaterialModule],
+  imports: [BrowserModule, AppRoutingModule, MaterialModule, DragDropModule],
   providers: [],
   bootstrap: [AppComponent],
 })
