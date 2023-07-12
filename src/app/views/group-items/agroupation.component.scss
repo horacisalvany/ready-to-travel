@@ -5,25 +5,41 @@
 - more examples: https://freefrontend.com/css-lists/ */
 
 h1 {
-  margin: 2rem;
   font-family: "Norican", cursive;
   color: saddlebrown;
   position: relative;
   display: flex;
   align-items: center;
   font-size: 2rem;
+  align-items: center;
+  justify-content: center;
   @media only screen and (orientation: landscape) {
     font-size: 4rem;
-  }
+    margin: 2rem;
 
-  &::before,
-  &::after {
-    content: "";
-    display: block;
-    width: 5rem;
-    height: 2px;
-    background-color: currentColor;
-    margin: 0 1rem;
+    &::before,
+    &::after {
+      content: "";
+      display: block;
+      width: 5rem;
+      height: 2px;
+      background-color: currentColor;
+      margin: 0 1rem;
+    }
+  }
+}
+
+h2 {
+  font-size: 16px;
+  @media only screen and (orientation: landscape) {
+    font-size: 20px;
+  }
+}
+
+.main-table {
+  @media only screen and (orientation: landscape) {
+    width: 65%;
+    margin: 0 auto;
   }
 }
 

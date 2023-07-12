@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Agroupation } from './agroupation';
-import { agroupations } from './agroupation.mock';
+import { agruoupations } from './agroupation.mock';
 
 @Component({
   selector: 'agroupation',
@@ -9,10 +9,7 @@ import { agroupations } from './agroupation.mock';
 })
 export class AgroupationComponent implements OnInit {
   breakpoint: number = 1;
-  groupItems: Agroupation = {
-    title: 'Makeup bag',
-    items: agroupations,
-  };
+  agroupations: Agroupation[] = agruoupations;
 
   ngOnInit() {
     if (window.innerWidth <= 400) {
