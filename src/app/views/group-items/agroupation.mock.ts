@@ -7,12 +7,67 @@ export const agruoupations: Agroupation[] = [
   },
   {
     title: 'Electronic stuff',
-    items: [
-      'Switch',
-      'Samsung buds',
-      'Mobile router',
-      'Laptop bag (fan, charger, wood support, pen, mouse, keyboard)',
-    ],
+    items: ['Switch', 'Samsung buds', 'Mobile router'],
+  },
+  {
+    title: 'Leisure',
+    items: ['Books', 'SurfSkate', 'Frisbi', 'Hammock'],
+  },
+  {
+    title: 'Makeup bag',
+    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+  },
+  {
+    title: 'Electronic stuff',
+    items: ['Switch', 'Samsung buds', 'Mobile router'],
+  },
+  {
+    title: 'Leisure',
+    items: ['Books', 'SurfSkate', 'Frisbi', 'Hammock'],
+  },
+  {
+    title: 'Makeup bag',
+    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+  },
+  {
+    title: 'Electronic stuff',
+    items: ['Switch', 'Samsung buds', 'Mobile router'],
+  },
+  {
+    title: 'Leisure',
+    items: ['Books', 'SurfSkate', 'Frisbi', 'Hammock'],
+  },
+  {
+    title: 'Makeup bag',
+    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+  },
+  {
+    title: 'Electronic stuff',
+    items: ['Switch', 'Samsung buds', 'Mobile router'],
+  },
+  {
+    title: 'Leisure',
+    items: ['Books', 'SurfSkate', 'Frisbi', 'Hammock'],
+  },
+  {
+    title: 'Makeup bag',
+    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+  },
+  {
+    title: 'Electronic stuff',
+    items: ['Switch', 'Samsung buds', 'Mobile router'],
+  },
+  {
+    title: 'Leisure',
+    items: ['Books', 'SurfSkate', 'Frisbi', 'Hammock'],
+  },
+  {
+    title: 'Makeup bag',
+    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+  },
+  {
+    title: 'Electronic stuff',
+    items: ['Switch', 'Samsung buds', 'Mobile router'],
   },
   {
     title: 'Leisure',

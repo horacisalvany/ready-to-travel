@@ -16,6 +16,7 @@ h1 {
   @media only screen and (orientation: landscape) {
     font-size: 4rem;
     margin: 2rem;
+    padding-bottom: 24px;
 
     &::before,
     &::after {
@@ -31,43 +32,21 @@ h1 {
 
 h2 {
   font-size: 16px;
+  margin-bottom: 0px;
   @media only screen and (orientation: landscape) {
     font-size: 20px;
+    margin-bottom: 16px;
   }
 }
 
-.main-table {
+mat-list-item {
+  text-align: center;
   @media only screen and (orientation: landscape) {
-    width: 65%;
-    margin: 0 auto;
+    text-align: left;
   }
-}
-
-mat-grid-list {
-  list-style-position: inside;
-  background: white;
-  padding: 0;
-  margin: 0;
-  border-radius: 0.1rem;
-}
-
-mat-grid-tile {
   &:hover {
     background-color: lightblue;
   }
-}
-
-mat-grid-tile:not(:last-child) {
-  border-bottom: 1px solid lightblue;
-  border-right: 1px solid lightblue;
-}
-
-mat-grid-tile:first-child {
-  margin-top: 1rem;
-}
-
-mat-grid-tile:last-child {
-  margin-bottom: 1rem;
 }
 
 .cdk-drag-preview {
