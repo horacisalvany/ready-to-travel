@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './material.module';
-import { AgroupationComponent } from './views/group-items/agroupation.component';
+import { AgroupationComponent } from './views/agroupation/agroupation.component';
 import { MainMenuComponent } from './views/main-menu/main-menu.component';
 
 @NgModule({
