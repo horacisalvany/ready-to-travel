@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Grape+Nuts&family=Norican&display=swap");
-/* CSS taken from this websites: 
+/* CSS taken from this websites:
 - https://codepen.io/michellebarker/pen/jOzOqNg
-- https://codepen.io/wheatup/pen/GRyxmRb 
+- https://codepen.io/wheatup/pen/GRyxmRb
 - more examples: https://freefrontend.com/css-lists/ */
 
 h1 {
@@ -58,4 +58,24 @@ mat-list-item {
 
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.material-icons {
+  font-size: 48px;
+  color: #888;
+  right: 0;
+  position: fixed;
+  top: 50%;
+  @media only screen and (orientation: landscape) {
+    top: auto;
+    right: 100px;
+    font-size: 100px;
+
+    &:hover {
+      color: red;
+    }
+  }
+  .cdk-drag-placeholder {
+    display: none;
+  }
 }

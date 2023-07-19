@@ -1,24 +1,35 @@
-<h1>Agroupations</h1>
-<div class="container">
-  <div cdkDropListGroup class="row">
-    <div
-      *ngFor="let agroupation of agroupations; let i = index"
-      class="col-md-4"
-    >
-      <h2>{{ agroupation.title }}</h2>
-      <mat-list
-        role="list"
-        cdkDropList
-        [cdkDropListData]="agroupation.items"
-        (cdkDropListDropped)="drop($event)"
+<div cdkDropListGroup>
+  <span
+    cdkDropList
+    (cdkDropListDropped)="dropTrash($event)"
+    class="material-icons"
+    >restore_from_trash</span
+  >
+  <h1>Agroupations</h1>
+  <div class="container">
+    <div class="row">
+      <div
+        *ngFor="let agroupation of agroupations; let i = index"
+        class="col-md-4"
       >
-        <mat-list-item
-          cdkDrag
-          *ngFor="let item of agroupation.items"
-          role="listitem"
-          >{{ item }}</mat-list-item
+        <h2>{{ agroupation.title }}</h2>
+        <mat-list
+          role="list"
+          cdkDropList
+          [cdkDropListData]="agroupation.items"
+          (cdkDropListDropped)="drop($event)"
         >
-      </mat-list>
+          <input type="text" maxlength="20" (change)="change($event)" />
+          <button (click)="onAdd(i)">Add</button>
+
+          <mat-list-item
+            cdkDrag
+            *ngFor="let item of agroupation.items"
+            role="listitem"
+            >{{ item }}</mat-list-item
+          >
+        </mat-list>
+      </div>
     </div>
   </div>
 </div>
