@@ -1,5 +1,6 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatListModule } from '@angular/material/list';
 import { AgroupationComponent } from './agroupation.component';
 
 describe('AgroupationComponent', () => {
@@ -8,6 +9,7 @@ describe('AgroupationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [MatListModule, DragDropModule],
       declarations: [AgroupationComponent],
     }).compileComponents();
 

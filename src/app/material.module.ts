@@ -7,7 +7,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
-  imports: [MatButtonModule, MatMenuModule, MatToolbarModule, MatCardModule],
   exports: [
     MatButtonModule,
     MatMenuModule,

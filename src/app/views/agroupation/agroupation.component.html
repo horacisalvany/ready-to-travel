@@ -22,12 +22,9 @@
           <input type="text" maxlength="20" (change)="change($event)" />
           <button (click)="onAdd(i)">Add</button>
 
-          <mat-list-item
-            cdkDrag
-            *ngFor="let item of agroupation.items"
-            role="listitem"
-            >{{ item }}</mat-list-item
-          >
+          <mat-list-item cdkDrag *ngFor="let item of agroupation.items">{{
+            item
+          }}</mat-list-item>
         </mat-list>
       </div>
     </div>
