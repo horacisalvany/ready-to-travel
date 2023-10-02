@@ -1,0 +1,25 @@
+h1 {
+  font-family: "Norican", cursive;
+  color: saddlebrown;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  @media only screen and (orientation: landscape) {
+    font-size: 4rem;
+    margin: 2rem;
+    padding-bottom: 24px;
+
+    &::before,
+    &::after {
+      content: "";
+      display: block;
+      width: 5rem;
+      height: 2px;
+      background-color: currentColor;
+      margin: 0 1rem;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+<h1>Lists</h1>
+<mat-list role="list">
+  <mat-list-item (click)="onClickList(list.id)" *ngFor="let list of lists">{{
+    list.title
+  }}</mat-list-item>
+</mat-list>

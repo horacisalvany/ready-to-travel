@@ -1,0 +1,26 @@
+<div class="example-button-row">
+  <h1>{{ list.title }}</h1>
+  <button
+    (click)="openDialogAddAgroupation()"
+    mat-icon-button
+    aria-label="Example icon button with a vertical three dot icon"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div
+      *ngFor="let agroupation of list.agroupations; let i = index"
+      class="col-md-4"
+    >
+      <h2>{{ agroupation.title }}</h2>
+      <mat-list role="list">
+        <mat-list-item cdkDrag *ngFor="let item of agroupation.items">{{
+          item
+        }}</mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>
