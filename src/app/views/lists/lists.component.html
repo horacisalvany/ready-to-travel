@@ -1,4 +1,10 @@
-<h1>Lists</h1>
+<div class="button-row">
+  <h1>Lists</h1>
+  <button (click)="openDialogAddList()" mat-icon-button>
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
 <mat-list role="list">
   <mat-list-item (click)="onClickList(list.id)" *ngFor="let list of lists">{{
     list.title

@@ -23,3 +23,12 @@ h1 {
     }
   }
 }
+
+.button-row {
+  display: flex;
+  align-items: center;
+  @media only screen and (orientation: landscape) {
+    width: 50%;
+    margin: 0 auto;
+  }
+}
