@@ -1,5 +1,5 @@
 <div class="button-row">
-  <h1>{{ list.title }}</h1>
+  <h1 class="title">{{ list?.title }}</h1>
   <button (click)="openDialogAddAgroupation()" mat-icon-button>
     <mat-icon>add</mat-icon>
   </button>
@@ -8,7 +8,7 @@
 <div class="container">
   <div class="row">
     <div
-      *ngFor="let agroupation of list.agroupations; let i = index"
+      *ngFor="let agroupation of list?.agroupations; let i = index"
       class="col-md-4"
     >
       <h2>{{ agroupation.title }}</h2>
