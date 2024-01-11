@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
-import { agruoupations } from '../../agroupation/agroupation.mock';
-import { List } from '../../lists/list';
+import { agruoupations } from '../agroupation/agroupation.mock';
+import { List } from '../lists/list';
 import { DialogAddAgroupationComponent } from './dialog-add-agroupation/dialog-add-agroupation.component';
 
 @Component({
