@@ -1,4 +1,4 @@
-import { agruoupations } from '../agroupation/agroupation.mock';
+import { agruoupations, agruoupations2 } from '../agroupation/agroupation.mock';
 import { List } from './list';
 
 export const lists: List[] = [
@@ -21,5 +21,10 @@ export const lists: List[] = [
     id: 3,
     title: 'Short flight trip',
     agroupations: agruoupations,
+  },
+  {
+    id: 4,
+    title: 'Trivandrum',
+    agroupations: agruoupations2,
   },
 ];

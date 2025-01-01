@@ -18,6 +18,7 @@
           cdkDropList
           [cdkDropListData]="agroupation.items"
           (cdkDropListDropped)="drop($event)"
+          [id]="'cdk-drop-list-' + agroupation.id"
         >
           <input type="text" maxlength="20" (change)="change($event)" />
           <button (click)="onAdd(i)">Add</button>

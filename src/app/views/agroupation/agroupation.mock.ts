@@ -1,10 +1,108 @@
 import { Agroupation } from './agroupation';
 
+export const agruoupations2: Agroupation[] = [
+  {
+    id: 0,
+    title: 'Essentials',
+    items: [
+      'Passport',
+      'Smartphone',
+      'E-Visa',
+      'Boarding pass',
+      'DNI',
+      'Wallet',
+      'Home keys',
+      'Cash',
+    ],
+  },
+  {
+    id: 0,
+    title: 'Job',
+    items: [
+      'Laptop',
+      'Laptop Charger',
+      'Iphone',
+      'Iphone charger',
+      'Notebook',
+      'Bag',
+      'Headphones',
+    ],
+  },
+  {
+    id: 7,
+    title: 'Clothes',
+    items: [
+      'Underwear x 8',
+      'Socks x 8',
+      'Tshirt/shirt x 8',
+      'Long trousers',
+      'Jersey',
+      'Belt',
+      'Sport thsirt',
+      'Running shoes',
+      'Flip flops',
+      'Sport trousers',
+      'Waterproof jacket',
+      'Swimsuit',
+      'Pajamas',
+    ],
+  },
+  {
+    id: 0,
+    title: 'Makeup bag',
+    items: [
+      'Toothbrush',
+      'Toothpaste',
+      'Razor blade',
+      'Ear plugs',
+      'Mask',
+      'Minoxidil',
+      'Ferula + pils',
+      'Cologne',
+      'Deodorant',
+      'Glasses case',
+      'Eye contacts',
+      'Liquid contacts',
+      'Nail clippers',
+    ],
+  },
+  {
+    id: 2,
+    title: 'Electronic stuff',
+    items: [
+      'Smartphone',
+      'Switch',
+      'Sony buds',
+      'Smartwatch',
+      'Kindle',
+      'Smartphone Charger',
+      'Wire type-C',
+      'Wire Iphone',
+      'Wire type-old',
+      'Wire smartwatch',
+    ],
+  },
+  {
+    id: 4,
+    title: 'First aid kits',
+    items: [
+      'Iboprofeno',
+      'Couldina',
+      'Symbicort',
+      'Budesonida',
+      'Antiestaminic',
+      'Melatonina',
+      'Dormidina',
+      'Vaporub',
+    ],
+  },
+];
+
 export const agruoupations: Agroupation[] = [
   {
     id: 0,
     title: 'Makeup bag',
-    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+    items: ['Toothbrush', 'Toothpaste', 'Razor blade', 'Ear plugs'],
   },
   {
     id: 1,
@@ -18,8 +116,15 @@ export const agruoupations: Agroupation[] = [
   },
   {
     id: 3,
-    title: 'Makeup bag',
-    items: ['Toothbrush', 'Razor blade', 'Ear plugs', 'Dormidina'],
+    title: 'First aid kits',
+    items: [
+      'Iboprofeno',
+      'Symbicort',
+      'Budesonida',
+      'Antiestaminic',
+      'Melatonina',
+      'Dormidina',
+    ],
   },
   {
     id: 4,
