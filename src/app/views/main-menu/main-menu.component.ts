@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class MainMenuComponent {
   constructor(private router: Router, private route: ActivatedRoute) {}
+
   public onClickMenu(option: string) {
     this.router.navigate([option], { relativeTo: this.route });
   }

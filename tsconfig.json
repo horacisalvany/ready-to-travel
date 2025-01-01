@@ -2,10 +2,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
+    // Necessary to avoid error: "Error: node_modules/@angular/fire/compat/database/interfaces.d.ts:47:18 - error TS2430: Interface 'DatabaseSnapshotExists<T>' incorrectly extends interface 'DataSnapshot'."
+    "skipLibCheck": true,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -20,7 +22,13 @@
     "module": "ES2022",
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    // Necessary to avoid error " Types of parameters 'subscriber' and 'subscriber' are incompatible."
+    // https://blog.codewithdan.com/rxjs-error-types-of-property-source-are-incompatible/
+    "paths": {
+      "rxjs": ["node_modules/rxjs"],
+      "rxjs/*": ["node_modules/rxjs/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

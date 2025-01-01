@@ -1,0 +1,21 @@
+<div mat-dialog-content>
+  <section class="example-section">
+    <h4>What is the name of the list?</h4>
+    <!-- <input matInput [(ngModel)]="listTitle" placeholder="Ex. Weekend trip" /> -->
+    <input (change)="change($event)" />
+  </section>
+</div>
+<div mat-dialog-actions>
+  <button [mat-dialog-close]="result" mat-button mat-dialog-close>
+    Cancel
+  </button>
+  <button
+    mat-button
+    mat-dialog-close
+    cdkFocusInitial
+    [mat-dialog-close]="result"
+    (click)="onCreate('a')"
+  >
+    Create
+  </button>
+</div>

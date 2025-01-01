@@ -25,6 +25,10 @@ p {
   flex: 1;
 }
 
+.home {
+  vertical-align: middle;
+}
+
 .toolbar {
   position: absolute;
   top: 0;
@@ -33,7 +37,8 @@ p {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #1976d2;
+  background-color: indigo;
+
   color: white;
   font-weight: 600;
 }
