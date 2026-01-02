@@ -4,7 +4,9 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Agroupation } from './agroupation';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AgroupationService {
   constructor(private db: AngularFireDatabase) {}
 
