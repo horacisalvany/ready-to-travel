@@ -1,19 +1,32 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatListModule } from '@angular/material/list';
+import { TestBed } from '@angular/core/testing';
 import { AgroupationComponent } from './agroupation.component';
+import { AgroupationService } from './agroupation.service';
+import { of } from 'rxjs';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+
+const angularFireDatabaseMock = {
+  list: (path: string) => ({
+    valueChanges: () => of([]), // simula un observable vacío
+    snapshotChanges: () => of([]),
+  }),
+};
 
 describe('AgroupationComponent', () => {
   let component: AgroupationComponent;
-  let fixture: ComponentFixture<AgroupationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatListModule, DragDropModule],
+      imports: [], // importa módulos standalone si tu componente lo es
       declarations: [AgroupationComponent],
+      providers: [
+        AgroupationService,
+        { provide: AngularFireDatabase, useValue: angularFireDatabaseMock },
+      ],
     }).compileComponents();
+  });
 
-    fixture = TestBed.createComponent(AgroupationComponent);
+  beforeEach(() => {
+    const fixture = TestBed.createComponent(AgroupationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
