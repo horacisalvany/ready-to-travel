@@ -4,12 +4,14 @@ import { AgroupationComponent } from './views/agroupation/agroupation.component'
 import { ListComponent } from './views/list/list.component';
 import { ListsComponent } from './views/lists/lists.component';
 import { MainMenuComponent } from './views/main-menu/main-menu.component';
+import SignUpComponent from './views/auth/sign-up/sign-up.component';
 
 const routes: Routes = [
   { path: '', component: MainMenuComponent },
   { path: 'agroupation', component: AgroupationComponent },
   { path: 'list', component: ListsComponent },
   { path: 'list/:id', component: ListComponent },
+  { path: 'sign-up', component: SignUpComponent },
 ];
 
 @NgModule({
