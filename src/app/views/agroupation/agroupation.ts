@@ -1,5 +1,5 @@
 export interface Agroupation {
-  id: number;
+  id: string;
   title: string;
   items: string[];
 }

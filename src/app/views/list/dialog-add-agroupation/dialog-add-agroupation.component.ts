@@ -8,7 +8,6 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { Agroupation } from 'src/app/views/agroupation/agroupation';
-import { agruoupations } from 'src/app/views/agroupation/agroupation.mock';
 
 @Component({
   selector: 'dialog-add-agroupation',
@@ -18,15 +17,25 @@ import { agruoupations } from 'src/app/views/agroupation/agroupation.mock';
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatCheckboxModule],
 })
 export class DialogAddAgroupationComponent {
-  agruoupations: Agroupation[] = agruoupations;
-  result: boolean[] = new Array(agruoupations.length).fill(false);
+  agroupations: Agroupation[];
+  selected: Set<string> = new Set();
 
   constructor(
     public dialogRef: MatDialogRef<DialogAddAgroupationComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: boolean[]
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: { allAgroupations: Agroupation[] }
+  ) {
+    this.agroupations = data.allAgroupations;
+  }
 
-  onAgroupation(index: number) {
-    this.result[index] = !this.result[index];
+  onAgroupation(id: string) {
+    if (this.selected.has(id)) {
+      this.selected.delete(id);
+    } else {
+      this.selected.add(id);
+    }
+  }
+
+  getResult(): string[] {
+    return Array.from(this.selected);
   }
 }
