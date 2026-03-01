@@ -1,8 +1,10 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
@@ -18,6 +20,7 @@ import { MainMenuComponent } from './views/main-menu/main-menu.component';
   declarations: [AppComponent, MainMenuComponent, AgroupationComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     MaterialModule,
     DragDropModule,
@@ -27,6 +30,7 @@ import { MainMenuComponent } from './views/main-menu/main-menu.component';
     { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
     AgroupationService,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),
   ],
   bootstrap: [AppComponent],
