@@ -47,3 +47,32 @@ yarn test:prod    # Run tests headless with coverage
 - Uses SCSS for styling with a custom theme in `src/theme.scss`
 - Drag and drop functionality via `@angular/cdk/drag-drop`
 - Mock data available in `.mock.ts` files for testing/development
+
+## Firebase Authentication - Implementation Complete
+
+### New Files Created
+
+- `src/app/services/auth.service.ts` - Auth logic (login, register, Google sign-in, logout)
+- `src/app/guards/auth.guard.ts` - Route protection
+- `src/app/views/login/login.component.ts` - Login UI component
+- `src/app/views/login/login.component.html` - Login template
+- `src/app/views/login/login.component.scss` - Login styles
+- `src/app/views/login/login.component.spec.ts` - Tests
+
+### Modified Files
+
+- `src/app/app.module.ts` - Added `provideAuth()` and `BrowserAnimationsModule`
+- `src/app/material.module.ts` - Added form field modules
+- `src/app/app-routing.module.ts` - Added AuthGuard to all routes, login route
+- `src/app/views/main-menu/main-menu.component.ts` - Added logout
+- `src/app/views/main-menu/main-menu.component.html` - Added user header with logout
+- `src/app/views/main-menu/main-menu.component.scss` - Added user header styles
+
+### To Test
+
+```bash
+npm install   # or yarn install
+npm start     # or yarn start
+```
+
+Then navigate to `http://localhost:4200` - you should be redirected to `/login`.

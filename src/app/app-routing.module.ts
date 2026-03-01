@@ -1,15 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 import { AgroupationComponent } from './views/agroupation/agroupation.component';
 import { ListComponent } from './views/list/list.component';
 import { ListsComponent } from './views/lists/lists.component';
+import { LoginComponent } from './views/login/login.component';
 import { MainMenuComponent } from './views/main-menu/main-menu.component';
 
 const routes: Routes = [
-  { path: '', component: MainMenuComponent },
-  { path: 'agroupation', component: AgroupationComponent },
-  { path: 'list', component: ListsComponent },
-  { path: 'list/:id', component: ListComponent },
+  { path: 'login', component: LoginComponent },
+  { path: '', component: MainMenuComponent, canActivate: [AuthGuard] },
+  { path: 'agroupation', component: AgroupationComponent, canActivate: [AuthGuard] },
+  { path: 'list', component: ListsComponent, canActivate: [AuthGuard] },
+  { path: 'list/:id', component: ListComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -7,9 +8,20 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./main-menu.component.scss'],
 })
 export class MainMenuComponent {
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  userEmail$ = this.authService.user$;
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {}
 
   public onClickMenu(option: string) {
     this.router.navigate([option], { relativeTo: this.route });
+  }
+
+  public async logout() {
+    await this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
