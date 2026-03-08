@@ -38,8 +38,21 @@
           [id]="'cdk-drop-list-' + group.id"
           [cdkDropListEnterPredicate]="itemPredicate"
         >
-          <input type="text" maxlength="20" (change)="change($event)" />
-          <button (click)="onAdd(i)">Add</button>
+          <div class="add-item-row">
+            <input
+              #itemInput
+              type="text"
+              maxlength="40"
+              placeholder="New item..."
+              (keyup.enter)="onAdd(i, itemInput); itemInput.value = ''"
+            />
+            <button
+              mat-icon-button
+              (click)="onAdd(i, itemInput); itemInput.value = ''"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
 
           <mat-list-item
             cdkDrag

@@ -9,18 +9,24 @@ import { ListService } from './list.service';
 import { GroupService } from '../group/group.service';
 import { Group } from '../group/group';
 import { List } from '../lists/list';
+import { Section } from './section';
+
+const MOCK_SECTIONS: Section[] = [
+  { id: 's1', title: 'Packing', items: ['Passport', 'Tickets'], sourceGroupId: 'g1' },
+  { id: 's2', title: 'Electronics', items: ['Phone', 'Charger'], sourceGroupId: 'g3' },
+];
+
+const MOCK_LIST: List = {
+  id: 'list1',
+  title: 'Paris Trip',
+  sections: MOCK_SECTIONS.map((s) => ({ ...s, items: [...s.items] })),
+};
 
 const MOCK_GROUPS: Group[] = [
   { id: 'g1', title: 'Packing', items: ['Passport', 'Tickets'] },
   { id: 'g2', title: 'Documents', items: ['ID Card'] },
   { id: 'g3', title: 'Electronics', items: ['Phone', 'Charger'] },
 ];
-
-const MOCK_LIST: List = {
-  id: 'list1',
-  title: 'Paris Trip',
-  groupIds: ['g1', 'g3'],
-};
 
 describe('ListComponent', () => {
   let component: ListComponent;
@@ -31,10 +37,19 @@ describe('ListComponent', () => {
   beforeEach(async () => {
     mockListService = jasmine.createSpyObj('ListService', [
       'getList',
-      'updateListGroups',
+      'addSectionToList',
+      'removeSectionFromList',
+      'updateSectionItems',
     ]);
-    mockListService.getList.and.returnValue(of({ ...MOCK_LIST, groupIds: [...MOCK_LIST.groupIds] }));
-    mockListService.updateListGroups.and.returnValue(of(undefined));
+    mockListService.getList.and.returnValue(
+      of({
+        ...MOCK_LIST,
+        sections: MOCK_LIST.sections.map((s) => ({ ...s, items: [...s.items] })),
+      })
+    );
+    mockListService.addSectionToList.and.returnValue(of('newSectionId'));
+    mockListService.removeSectionFromList.and.returnValue(of(undefined));
+    mockListService.updateSectionItems.and.returnValue(of(undefined));
 
     mockGroupService = jasmine.createSpyObj('GroupService', ['getGroups']);
     mockGroupService.getGroups.and.returnValue(
@@ -66,111 +81,122 @@ describe('ListComponent', () => {
 
   // --- ngOnInit / loading ---
 
-  it('should load all groups on init', () => {
-    expect(mockGroupService.getGroups).toHaveBeenCalled();
-    expect(component.allGroups.length).toBe(3);
-  });
-
   it('should load the list from route param on init', () => {
     expect(mockListService.getList).toHaveBeenCalledWith('list1');
     expect(component.list).toBeDefined();
     expect(component.list!.title).toBe('Paris Trip');
   });
 
-  // --- updateDisplayedGroups ---
-
-  it('should filter groups to only those in the list groupIds', () => {
-    expect(component.groups.length).toBe(2);
-    expect(component.groups.map((g) => g.id)).toEqual(['g1', 'g3']);
+  it('should have sections from the loaded list', () => {
+    expect(component.list!.sections.length).toBe(2);
+    expect(component.list!.sections[0].title).toBe('Packing');
+    expect(component.list!.sections[1].title).toBe('Electronics');
   });
 
-  it('should not include groups not referenced by the list', () => {
-    const ids = component.groups.map((g) => g.id);
-    expect(ids).not.toContain('g2');
+  // --- onAddItemToSection ---
+
+  it('should add an item to a section and call updateSectionItems', () => {
+    component.onAddItemToSection('s1', 'Sunglasses');
+
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's1',
+      ['Passport', 'Tickets', 'Sunglasses']
+    );
   });
 
-  it('should set groups to empty when list has no groupIds', () => {
-    component.list = { id: 'list2', title: 'Empty', groupIds: [] };
-    component.allGroups = [...MOCK_GROUPS];
-    component['updateDisplayedGroups']();
-    expect(component.groups.length).toBe(0);
+  it('should trim whitespace from added items', () => {
+    component.onAddItemToSection('s1', '  Hat  ');
+
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's1',
+      ['Passport', 'Tickets', 'Hat']
+    );
   });
 
-  it('should not update groups when list is undefined', () => {
+  it('should not add empty or whitespace-only items', () => {
+    component.onAddItemToSection('s1', '   ');
+
+    expect(mockListService.updateSectionItems).not.toHaveBeenCalled();
+  });
+
+  it('should not add item when list is undefined', () => {
     component.list = undefined;
-    component.allGroups = [...MOCK_GROUPS];
-    component.groups = [];
-    component['updateDisplayedGroups']();
-    expect(component.groups.length).toBe(0);
+    component.onAddItemToSection('s1', 'Item');
+
+    expect(mockListService.updateSectionItems).not.toHaveBeenCalled();
   });
 
-  it('should not update groups when allGroups is empty', () => {
-    component.allGroups = [];
-    component.groups = [];
-    component['updateDisplayedGroups']();
-    expect(component.groups.length).toBe(0);
+  // --- onRemoveSection ---
+
+  it('should call removeSectionFromList when removing a section', () => {
+    component.onRemoveSection('s1');
+
+    expect(mockListService.removeSectionFromList).toHaveBeenCalledWith(
+      'list1',
+      's1'
+    );
+  });
+
+  it('should not remove section when list is undefined', () => {
+    component.list = undefined;
+    component.onRemoveSection('s1');
+
+    expect(mockListService.removeSectionFromList).not.toHaveBeenCalled();
   });
 
   // --- openDialogAddGroup ---
 
-  it('should open dialog and merge selected group ids on confirm', () => {
+  it('should fetch groups, open dialog, and create sections for selected groups', () => {
+    const selectedGroups = [MOCK_GROUPS[1]]; // Documents
     const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    dialogRef.afterClosed.and.returnValue(of(['g2']));
+    dialogRef.afterClosed.and.returnValue(of(selectedGroups));
     spyOn(component.dialog, 'open').and.returnValue(dialogRef);
 
     component.openDialogAddGroup();
 
+    expect(mockGroupService.getGroups).toHaveBeenCalled();
     expect(component.dialog.open).toHaveBeenCalled();
-    expect(mockListService.updateListGroups).toHaveBeenCalledWith(
+    expect(mockListService.addSectionToList).toHaveBeenCalledWith(
       'list1',
-      ['g1', 'g3', 'g2']
+      MOCK_GROUPS[1]
     );
   });
 
-  it('should deduplicate group ids when merging', () => {
+  it('should create a section for each selected group', () => {
+    const selectedGroups = [MOCK_GROUPS[0], MOCK_GROUPS[2]];
     const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    dialogRef.afterClosed.and.returnValue(of(['g1', 'g3']));
+    dialogRef.afterClosed.and.returnValue(of(selectedGroups));
     spyOn(component.dialog, 'open').and.returnValue(dialogRef);
 
     component.openDialogAddGroup();
 
-    expect(mockListService.updateListGroups).toHaveBeenCalledWith(
-      'list1',
-      ['g1', 'g3']
-    );
+    expect(mockListService.addSectionToList).toHaveBeenCalledTimes(2);
+    expect(mockListService.addSectionToList).toHaveBeenCalledWith('list1', MOCK_GROUPS[0]);
+    expect(mockListService.addSectionToList).toHaveBeenCalledWith('list1', MOCK_GROUPS[2]);
   });
 
-  it('should not update when dialog is cancelled', () => {
+  it('should not create sections when dialog is cancelled', () => {
     const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
     dialogRef.afterClosed.and.returnValue(of(undefined));
     spyOn(component.dialog, 'open').and.returnValue(dialogRef);
 
     component.openDialogAddGroup();
 
-    expect(component.dialog.open).toHaveBeenCalled();
-    expect(mockListService.updateListGroups).not.toHaveBeenCalled();
+    expect(mockListService.addSectionToList).not.toHaveBeenCalled();
   });
 
-  it('should not update when list is undefined', () => {
+  it('should not create sections when list is undefined', () => {
     component.list = undefined;
+    const selectedGroups = [MOCK_GROUPS[0]];
     const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    dialogRef.afterClosed.and.returnValue(of(['g2']));
+    dialogRef.afterClosed.and.returnValue(of(selectedGroups));
     spyOn(component.dialog, 'open').and.returnValue(dialogRef);
 
     component.openDialogAddGroup();
 
-    expect(mockListService.updateListGroups).not.toHaveBeenCalled();
-  });
-
-  it('should pass allGroups to the dialog data', () => {
-    const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    dialogRef.afterClosed.and.returnValue(of(undefined));
-    const openSpy = spyOn(component.dialog, 'open').and.returnValue(dialogRef);
-
-    component.openDialogAddGroup();
-
-    const dialogConfig = openSpy.calls.mostRecent().args[1];
-    expect(dialogConfig!.data).toEqual({ allGroups: component.allGroups });
+    expect(mockListService.addSectionToList).not.toHaveBeenCalled();
   });
 
   // --- route param handling ---

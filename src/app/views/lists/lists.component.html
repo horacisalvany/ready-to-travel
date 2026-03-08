@@ -1,12 +1,32 @@
-<div class="button-row">
-  <h1>Lists</h1>
-  <button (click)="openDialogAddList()" mat-icon-button>
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+<div cdkDropListGroup>
+  <span
+    cdkDropList
+    (cdkDropListDropped)="dropTrash($event)"
+    class="material-icons trash-icon"
+    >restore_from_trash</span
+  >
 
-<mat-list role="list">
-  <mat-list-item (click)="onClickList(list.id)" *ngFor="let list of lists">{{
-    list.title
-  }}</mat-list-item>
-</mat-list>
+  <div class="button-row">
+    <h1>Lists</h1>
+    <button (click)="openDialogAddList()" mat-icon-button>
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <mat-list
+    role="list"
+    cdkDropList
+    id="lists-container"
+    (cdkDropListDropped)="dropList($event)"
+  >
+    <mat-list-item
+      *ngFor="let list of lists"
+      cdkDrag
+      [cdkDragData]="list.id"
+      (click)="onClickList(list.id)"
+    >
+      <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+      <span class="list-title">{{ list.title }}</span>
+    </mat-list-item>
+  </mat-list>
+</div>

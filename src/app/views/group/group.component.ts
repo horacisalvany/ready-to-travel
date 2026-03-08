@@ -17,7 +17,6 @@ import { DialogCreateGroupComponent } from './dialog-add-group/dialog-add-group.
 })
 export class GroupComponent implements OnInit {
   groups: Group[] = [];
-  lastInputValue: string = '';
 
   constructor(
     private groupService: GroupService,
@@ -108,14 +107,12 @@ export class GroupComponent implements OnInit {
     this.updateFirebase(group.id, group.items);
   }
 
-  onAdd(index: number) {
+  onAdd(index: number, input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (!value) return;
     const group = this.groups[index];
-    group.items.push(this.lastInputValue);
+    group.items.push(value);
     this.updateFirebase(group.id, group.items);
-  }
-
-  change(event: any) {
-    this.lastInputValue = event.target.value;
   }
 
   openDialogAddGroup(): void {

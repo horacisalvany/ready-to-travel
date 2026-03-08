@@ -63,25 +63,24 @@ describe('GroupComponent', () => {
     expect(component.groups[1].title).toBe('Documents');
   });
 
-  // --- change ---
-
-  it('should store the last input value on change', () => {
-    const event = { target: { value: 'Sunglasses' } };
-    component.change(event);
-    expect(component.lastInputValue).toBe('Sunglasses');
-  });
-
   // --- onAdd ---
 
   it('should add an item to the group and update Firebase', () => {
-    component.lastInputValue = 'Sunglasses';
-    component.onAdd(0);
+    const input = { value: 'Sunglasses' } as HTMLInputElement;
+    component.onAdd(0, input);
 
     expect(component.groups[0].items).toContain('Sunglasses');
     expect(mockGroupService.updateGroup).toHaveBeenCalledWith(
       'g1',
       component.groups[0].items
     );
+  });
+
+  it('should not add empty or whitespace-only items', () => {
+    const input = { value: '   ' } as HTMLInputElement;
+    component.onAdd(0, input);
+
+    expect(mockGroupService.updateGroup).not.toHaveBeenCalled();
   });
 
   // --- onDelete ---

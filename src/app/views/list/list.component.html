@@ -8,15 +8,45 @@
 <div class="container">
   <div class="row">
     <div
-      *ngFor="let group of groups; let i = index"
+      *ngFor="let section of list?.sections; let i = index"
       class="col-6 col-md-4"
     >
-      <h2>{{ group.title }}</h2>
+      <div class="section-header">
+        <h2>{{ section.title }}</h2>
+        <button
+          mat-icon-button
+          class="section-delete"
+          (click)="onRemoveSection(section.id)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
       <mat-list role="list">
-        <mat-list-item *ngFor="let item of group.items">{{
+        <mat-list-item *ngFor="let item of section.items">{{
           item
         }}</mat-list-item>
       </mat-list>
+      <div class="add-item-row">
+        <input
+          #itemInput
+          type="text"
+          maxlength="40"
+          placeholder="New item..."
+          (keyup.enter)="
+            onAddItemToSection(section.id, itemInput.value);
+            itemInput.value = ''
+          "
+        />
+        <button
+          mat-icon-button
+          (click)="
+            onAddItemToSection(section.id, itemInput.value);
+            itemInput.value = ''
+          "
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 </div>

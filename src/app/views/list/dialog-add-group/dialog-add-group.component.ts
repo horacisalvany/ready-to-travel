@@ -35,7 +35,7 @@ export class DialogAddGroupComponent {
     }
   }
 
-  getResult(): string[] {
-    return Array.from(this.selected);
+  getResult(): Group[] {
+    return this.groups.filter((g) => this.selected.has(g.id));
   }
 }
