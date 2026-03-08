@@ -16,10 +16,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'ready2travel'`, () => {
+  it(`should have as title 'tripReady'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('ready2travel');
+    expect(app.title).toEqual('tripReady');
   });
 
   it('should render title on header', () => {
@@ -27,7 +27,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('span')?.textContent).toContain(
-      'Ready2Travel'
+      'TripReady'
     );
   });
 });

@@ -34,7 +34,7 @@ export class ListService {
                 return {
                   id: c.payload.key!,
                   title: data?.title ?? 'Untitled',
-                  agroupationIds: data?.agroupationIds ?? [],
+                  groupIds: data?.groupIds ?? [],
                 } as List;
               })
             )
@@ -56,7 +56,7 @@ export class ListService {
               return {
                 id,
                 title: data.title,
-                agroupationIds: data.agroupationIds ?? [],
+                groupIds: data.groupIds ?? [],
               } as List;
             })
           );
@@ -69,7 +69,7 @@ export class ListService {
       switchMap((path) => {
         if (!path) return of(null);
         return from(
-          this.db.list(`${path}/lists`).push({ title, agroupationIds: [] })
+          this.db.list(`${path}/lists`).push({ title, groupIds: [] })
         ).pipe(map((ref) => ref.key));
       })
     );
@@ -84,15 +84,15 @@ export class ListService {
     );
   }
 
-  updateListAgroupations(
+  updateListGroups(
     listId: string,
-    agroupationIds: string[]
+    groupIds: string[]
   ): Observable<void> {
     return this.userPath().pipe(
       switchMap((path) => {
         if (!path) return of(undefined as void);
         return from(
-          this.db.list(`${path}/lists`).update(listId, { agroupationIds })
+          this.db.list(`${path}/lists`).update(listId, { groupIds: groupIds })
         );
       })
     );

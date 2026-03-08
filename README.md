@@ -1,2 +1,2 @@
-# Ready2Travel
+# TripReady
 Web application to prepare your trips.

@@ -6,29 +6,29 @@
     >restore_from_trash</span
   >
   <div class="button-row">
-    <h1>Agroupations</h1>
-    <button (click)="openDialogAddAgroupation()" mat-icon-button>
+    <h1>Groups</h1>
+    <button (click)="openDialogAddGroup()" mat-icon-button>
       <mat-icon>add</mat-icon>
     </button>
   </div>
   <div class="container">
     <div class="row">
       <div
-        *ngFor="let agroupation of agroupations; let i = index"
+        *ngFor="let group of groups; let i = index"
         class="col-md-4"
       >
-        <h2>{{ agroupation.title }}</h2>
+        <h2>{{ group.title }}</h2>
         <mat-list
           role="list"
           cdkDropList
-          [cdkDropListData]="agroupation.items"
+          [cdkDropListData]="group.items"
           (cdkDropListDropped)="drop($event)"
-          [id]="'cdk-drop-list-' + agroupation.id"
+          [id]="'cdk-drop-list-' + group.id"
         >
           <input type="text" maxlength="20" (change)="change($event)" />
           <button (click)="onAdd(i)">Add</button>
 
-          <mat-list-item cdkDrag *ngFor="let item of agroupation.items">{{
+          <mat-list-item cdkDrag *ngFor="let item of group.items">{{
             item
           }}</mat-list-item>
         </mat-list>

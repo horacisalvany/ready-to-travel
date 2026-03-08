@@ -1,4 +1,4 @@
-# Ready2Travel
+# TripReady
 
 Web application to help users prepare their trips by organizing travel checklists.
 
@@ -21,7 +21,7 @@ src/app/
     ├── main-menu/         # Main navigation menu
     ├── lists/             # Lists overview (travel lists)
     ├── list/              # Single list view with items
-    └── agroupation/       # Item groupings within lists
+    └── group/             # Item aggregation within lists
 ```
 
 ## Commands
