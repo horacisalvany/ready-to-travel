@@ -13,7 +13,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './material.module';
 import { AgroupationComponent } from './views/agroupation/agroupation.component';
-import { AgroupationService } from './views/agroupation/agroupation.service';
 import { MainMenuComponent } from './views/main-menu/main-menu.component';
 
 @NgModule({
@@ -28,7 +27,6 @@ import { MainMenuComponent } from './views/main-menu/main-menu.component';
   ],
   providers: [
     { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
-    AgroupationService,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),

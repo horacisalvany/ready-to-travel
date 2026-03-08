@@ -1,14 +1,15 @@
 import { TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { of } from 'rxjs';
 import { AgroupationComponent } from './agroupation.component';
 import { AgroupationService } from './agroupation.service';
-import { of } from 'rxjs';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 
-const angularFireDatabaseMock = {
-  list: (path: string) => ({
-    valueChanges: () => of([]), // simula un observable vacío
-    snapshotChanges: () => of([]),
-  }),
+const mockAgroupationService = {
+  getAgroupations: () => of([]),
+  updateAgroupation: jasmine.createSpy('updateAgroupation').and.returnValue(of(undefined)),
+  addAgroupation: jasmine.createSpy('addAgroupation').and.returnValue(of('key1')),
+  deleteAgroupation: jasmine.createSpy('deleteAgroupation').and.returnValue(of(undefined)),
 };
 
 describe('AgroupationComponent', () => {
@@ -16,11 +17,10 @@ describe('AgroupationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [], // importa módulos standalone si tu componente lo es
+      imports: [MatDialogModule, MatIconModule],
       declarations: [AgroupationComponent],
       providers: [
-        AgroupationService,
-        { provide: AngularFireDatabase, useValue: angularFireDatabaseMock },
+        { provide: AgroupationService, useValue: mockAgroupationService },
       ],
     }).compileComponents();
   });

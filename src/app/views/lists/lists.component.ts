@@ -6,7 +6,6 @@ import { MaterialModule } from 'src/app/material.module';
 import { ListService } from '../list/list.service';
 import { DialogAddListComponent } from './dialog-add-list/dialog-add-list.component';
 import { List } from './list';
-import { lists } from './list.mock';
 
 @Component({
   selector: 'lists',
@@ -14,7 +13,6 @@ import { lists } from './list.mock';
   styleUrls: ['./lists.component.scss'],
   standalone: true,
   imports: [CommonModule, MaterialModule],
-  providers: [ListService],
 })
 export class ListsComponent implements OnInit {
   lists: List[] = [];
@@ -30,11 +28,9 @@ export class ListsComponent implements OnInit {
     this.listService.getLists().subscribe((lists) => (this.lists = lists));
   }
 
-  public onClickList(listId: number) {
-    const list = lists.find((list) => list.id === listId);
+  public onClickList(listId: string) {
     this.router.navigate([listId], {
       relativeTo: this.route,
-      state: list,
     });
   }
 
@@ -50,7 +46,9 @@ export class ListsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((titleList: string) => {
-      this.lists.push({ title: titleList, id: 12, agroupations: [] } as List);
+      if (titleList) {
+        this.listService.addList(titleList).subscribe();
+      }
     });
   }
 }

@@ -2,10 +2,15 @@
   <span
     cdkDropList
     (cdkDropListDropped)="dropTrash($event)"
-    class="material-icons"
+    class="material-icons trash-icon"
     >restore_from_trash</span
   >
-  <h1>Agroupations</h1>
+  <div class="button-row">
+    <h1>Agroupations</h1>
+    <button (click)="openDialogAddAgroupation()" mat-icon-button>
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
   <div class="container">
     <div class="row">
       <div

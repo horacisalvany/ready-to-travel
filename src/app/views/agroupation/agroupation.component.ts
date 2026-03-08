@@ -4,9 +4,10 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Agroupation } from './agroupation';
-import { agruoupations } from './agroupation.mock';
 import { AgroupationService } from './agroupation.service';
+import { DialogCreateAgroupationComponent } from './dialog-add-agroupation/dialog-add-agroupation.component';
 
 @Component({
   selector: 'agroupation',
@@ -14,17 +15,20 @@ import { AgroupationService } from './agroupation.service';
   styleUrls: ['./agroupation.component.scss'],
 })
 export class AgroupationComponent implements OnInit {
-  agroupations: Agroupation[] = agruoupations;
-  lastInputValue: string;
+  agroupations: Agroupation[] = [];
+  lastInputValue: string = '';
 
-  constructor(private agroupationService: AgroupationService) {}
+  constructor(
+    private agroupationService: AgroupationService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.loadAgroupations();
   }
 
-  async loadAgroupations() {
-    await this.agroupationService
+  loadAgroupations() {
+    this.agroupationService
       .getAgroupations()
       .subscribe((result) => (this.agroupations = result));
   }
@@ -33,8 +37,10 @@ export class AgroupationComponent implements OnInit {
     const previousIndex = event.previousIndex;
     const currentIndex = event.currentIndex;
 
-    // Get the agroupation id from event.container.id
-    const agroupationId = Number(event.container.id.split('cdk-drop-list-')[1]);
+    const containerId = event.container.id;
+    const agroupation = this.agroupations.find(
+      (a) => 'cdk-drop-list-' + a.id === containerId
+    );
 
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, previousIndex, currentIndex);
@@ -45,17 +51,23 @@ export class AgroupationComponent implements OnInit {
         previousIndex,
         currentIndex
       );
+
+      // Also update the source agroupation
+      const prevContainerId = event.previousContainer.id;
+      const prevAgroupation = this.agroupations.find(
+        (a) => 'cdk-drop-list-' + a.id === prevContainerId
+      );
+      if (prevAgroupation) {
+        this.updateFirebase(prevAgroupation.id, prevAgroupation.items);
+      }
     }
 
-    const agroupation: Agroupation | undefined = this.agroupations.find(
-      (groupation) => groupation.id === agroupationId
-    );
     if (agroupation) {
-      this.updateFirebase(agroupationId, agroupation.items); // Update Firebase
+      this.updateFirebase(agroupation.id, agroupation.items);
     }
   }
 
-  updateFirebase(id: number, items: string[]) {
+  updateFirebase(id: string, items: string[]) {
     this.agroupationService.updateAgroupation(id, items).subscribe(
       () => {
         console.log('Firebase updated successfully');
@@ -67,21 +79,42 @@ export class AgroupationComponent implements OnInit {
   }
 
   dropTrash(event: CdkDragDrop<string[]>) {
-    const agroupationId =
-      Number.parseInt(event.previousContainer.id.split('cdk-drop-list-')[1]) -
-      1;
-    this.onDelete(agroupationId, event.previousIndex);
+    const prevContainerId = event.previousContainer.id;
+    const agroupation = this.agroupations.find(
+      (a) => 'cdk-drop-list-' + a.id === prevContainerId
+    );
+    if (agroupation) {
+      agroupation.items.splice(event.previousIndex, 1);
+      this.updateFirebase(agroupation.id, agroupation.items);
+    }
   }
 
-  onDelete(agrupationIndex: number, elementIndex: number) {
-    this.agroupations[agrupationIndex].items.splice(elementIndex, 1);
+  onDelete(agroupationIndex: number, elementIndex: number) {
+    const agroupation = this.agroupations[agroupationIndex];
+    agroupation.items.splice(elementIndex, 1);
+    this.updateFirebase(agroupation.id, agroupation.items);
   }
 
   onAdd(index: number) {
-    this.agroupations[index].items.push(this.lastInputValue);
+    const agroupation = this.agroupations[index];
+    agroupation.items.push(this.lastInputValue);
+    this.updateFirebase(agroupation.id, agroupation.items);
   }
 
   change(event: any) {
     this.lastInputValue = event.target.value;
+  }
+
+  openDialogAddAgroupation(): void {
+    const dialogRef = this.dialog.open(DialogCreateAgroupationComponent, {
+      width: '250px',
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe((title: string) => {
+      if (title) {
+        this.agroupationService.addAgroupation(title).subscribe();
+      }
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Agroupation } from '../agroupation/agroupation';
 
 export interface List {
-  id: number;
+  id: string;
   title: string;
-  agroupations: Agroupation[];
+  agroupationIds: string[];
 }

@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
-import { agruoupations } from '../agroupation/agroupation.mock';
+import { Agroupation } from '../agroupation/agroupation';
+import { AgroupationService } from '../agroupation/agroupation.service';
 import { List } from '../lists/list';
 import { DialogAddAgroupationComponent } from './dialog-add-agroupation/dialog-add-agroupation.component';
 import { ListService } from './list.service';
@@ -14,38 +15,43 @@ import { ListService } from './list.service';
   styleUrls: ['./list.component.scss'],
   standalone: true,
   imports: [CommonModule, MaterialModule],
-  providers: [ListService],
 })
 export class ListComponent implements OnInit {
   list: List | undefined;
+  agroupations: Agroupation[] = [];
+  allAgroupations: Agroupation[] = [];
 
   constructor(
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    private listService: ListService
+    private listService: ListService,
+    private agroupationService: AgroupationService
   ) {}
 
   ngOnInit(): void {
-    const state = window.history?.state as List | null | undefined;
-    if (this.isList(state)) {
-      this.list = state;
-    } else {
-      console.error('State or list not found.');
-      console.log(this.route);
-      this.route.paramMap.subscribe((params) => {
-        const id = params.get('id');
-        // Convert the string to a number if needed
-        const numericId = id ? +id : null;
-
-        if (numericId !== null) {
-          this.listService.getList(numericId).subscribe((x) => (this.list = x));
-        }
+    this.agroupationService
+      .getAgroupations()
+      .subscribe((all) => {
+        this.allAgroupations = all;
+        this.updateDisplayedAgroupations();
       });
-    }
+
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (id) {
+        this.listService.getList(id).subscribe((list) => {
+          this.list = list;
+          this.updateDisplayedAgroupations();
+        });
+      }
+    });
   }
 
-  private isList(obj: any): obj is List {
-    return 'id' in obj && 'title' in obj && 'agroupations' in obj;
+  private updateDisplayedAgroupations() {
+    if (!this.list || !this.allAgroupations.length) return;
+    this.agroupations = this.allAgroupations.filter((a) =>
+      this.list!.agroupationIds.includes(a.id)
+    );
   }
 
   openDialogAddAgroupation(
@@ -56,15 +62,16 @@ export class ListComponent implements OnInit {
       width: '250px',
       enterAnimationDuration,
       exitAnimationDuration,
-      data: { idsAgroupation: [] },
+      data: { allAgroupations: this.allAgroupations },
     });
 
-    dialogRef.afterClosed().subscribe((agroupations: boolean[]) => {
-      agroupations.forEach((isSelected, index) => {
-        if (isSelected && this.list) {
-          this.list.agroupations.push(agruoupations[index]);
-        }
-      });
+    dialogRef.afterClosed().subscribe((selectedIds: string[]) => {
+      if (selectedIds && this.list) {
+        const merged = [...new Set([...this.list.agroupationIds, ...selectedIds])];
+        this.listService
+          .updateListAgroupations(this.list.id, merged)
+          .subscribe();
+      }
     });
   }
 }

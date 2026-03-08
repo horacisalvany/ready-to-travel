@@ -30,6 +30,12 @@ h1 {
   }
 }
 
+.button-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 h2 {
   font-size: 16px;
   margin-bottom: 0px;
@@ -60,7 +66,7 @@ mat-list-item {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.material-icons {
+.trash-icon {
   font-size: 48px;
   color: #888;
   right: 0;
