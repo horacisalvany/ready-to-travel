@@ -3,17 +3,17 @@ import { ListComponent } from './list.component';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { ListService } from './list.service';
-import { AgroupationService } from '../agroupation/agroupation.service';
+import { GroupService } from '../group/group.service';
 
 const mockListService = {
   getLists: () => of([]),
-  getList: () => of({ id: '1', title: 'Test List', agroupationIds: [] }),
+  getList: () => of({ id: '1', title: 'Test List', groupIds: [] }),
   addList: jasmine.createSpy('addList').and.returnValue(of('key1')),
-  updateListAgroupations: jasmine.createSpy('updateListAgroupations').and.returnValue(of(undefined)),
+  updateListGroup: jasmine.createSpy('updateListGroup').and.returnValue(of(undefined)),
 };
 
-const mockAgroupationService = {
-  getAgroupations: () => of([]),
+const mockGroupervice = {
+  getGroups: () => of([]),
 };
 
 describe('ListComponent', () => {
@@ -25,7 +25,7 @@ describe('ListComponent', () => {
       imports: [ListComponent],
       providers: [
         { provide: ListService, useValue: mockListService },
-        { provide: AgroupationService, useValue: mockAgroupationService },
+        { provide: GroupService, useValue: mockGroupervice },
         {
           provide: ActivatedRoute,
           useValue: {

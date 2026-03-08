@@ -7,27 +7,27 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { Agroupation } from 'src/app/views/agroupation/agroupation';
+import { Group } from 'src/app/views/group/group';
 
 @Component({
-  selector: 'dialog-add-agroupation',
-  templateUrl: './dialog-add-agroupation.component.html',
-  styleUrls: ['./dialog-add-agroupation.component.scss'],
+  selector: 'dialog-add-group',
+  templateUrl: './dialog-add-group.component.html',
+  styleUrls: ['./dialog-add-group.component.scss'],
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatCheckboxModule],
 })
-export class DialogAddAgroupationComponent {
-  agroupations: Agroupation[];
+export class DialogAddGroupComponent {
+  groups: Group[];
   selected: Set<string> = new Set();
 
   constructor(
-    public dialogRef: MatDialogRef<DialogAddAgroupationComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { allAgroupations: Agroupation[] }
+    public dialogRef: MatDialogRef<DialogAddGroupComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { allGroups: Group[] }
   ) {
-    this.agroupations = data.allAgroupations;
+    this.groups = data.allGroups;
   }
 
-  onAgroupation(id: string) {
+  onGroup(id: string) {
     if (this.selected.has(id)) {
       this.selected.delete(id);
     } else {

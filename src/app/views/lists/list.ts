@@ -1,7 +1,7 @@
-import { Agroupation } from '../agroupation/agroupation';
+import { Group } from '../group/group';
 
 export interface List {
   id: string;
   title: string;
-  agroupationIds: string[];
+  groupIds: string[];
 }

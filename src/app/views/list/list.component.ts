@@ -3,10 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
-import { Agroupation } from '../agroupation/agroupation';
-import { AgroupationService } from '../agroupation/agroupation.service';
+import { Group } from '../group/group';
+import { GroupService } from '../group/group.service';
 import { List } from '../lists/list';
-import { DialogAddAgroupationComponent } from './dialog-add-agroupation/dialog-add-agroupation.component';
+import { DialogAddGroupComponent } from './dialog-add-group/dialog-add-group.component';
 import { ListService } from './list.service';
 
 @Component({
@@ -18,22 +18,22 @@ import { ListService } from './list.service';
 })
 export class ListComponent implements OnInit {
   list: List | undefined;
-  agroupations: Agroupation[] = [];
-  allAgroupations: Agroupation[] = [];
+  groups: Group[] = [];
+  allGroups: Group[] = [];
 
   constructor(
     private route: ActivatedRoute,
     public dialog: MatDialog,
     private listService: ListService,
-    private agroupationService: AgroupationService
+    private groupService: GroupService
   ) {}
 
   ngOnInit(): void {
-    this.agroupationService
-      .getAgroupations()
+    this.groupService
+      .getGroups()
       .subscribe((all) => {
-        this.allAgroupations = all;
-        this.updateDisplayedAgroupations();
+        this.allGroups = all;
+        this.updateDisplayedGroups();
       });
 
     this.route.paramMap.subscribe((params) => {
@@ -41,35 +41,35 @@ export class ListComponent implements OnInit {
       if (id) {
         this.listService.getList(id).subscribe((list) => {
           this.list = list;
-          this.updateDisplayedAgroupations();
+          this.updateDisplayedGroups();
         });
       }
     });
   }
 
-  private updateDisplayedAgroupations() {
-    if (!this.list || !this.allAgroupations.length) return;
-    this.agroupations = this.allAgroupations.filter((a) =>
-      this.list!.agroupationIds.includes(a.id)
+  private updateDisplayedGroups() {
+    if (!this.list || !this.allGroups.length) return;
+    this.groups = this.allGroups.filter((a) =>
+      this.list!.groupIds.includes(a.id)
     );
   }
 
-  openDialogAddAgroupation(
+  openDialogAddGroup(
     enterAnimationDuration: string = '0ms',
     exitAnimationDuration: string = '0ms'
   ): void {
-    const dialogRef = this.dialog.open(DialogAddAgroupationComponent, {
+    const dialogRef = this.dialog.open(DialogAddGroupComponent, {
       width: '250px',
       enterAnimationDuration,
       exitAnimationDuration,
-      data: { allAgroupations: this.allAgroupations },
+      data: { allGroups: this.allGroups },
     });
 
     dialogRef.afterClosed().subscribe((selectedIds: string[]) => {
       if (selectedIds && this.list) {
-        const merged = [...new Set([...this.list.agroupationIds, ...selectedIds])];
+        const merged = [...new Set([...this.list.groupIds, ...selectedIds])];
         this.listService
-          .updateListAgroupations(this.list.id, merged)
+          .updateListGroups(this.list.id, merged)
           .subscribe();
       }
     });

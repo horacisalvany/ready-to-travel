@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DialogCreateAgroupationComponent } from './dialog-add-agroupation.component';
+import { DialogCreateGroupComponent } from './dialog-add-group.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-describe('DialogCreateAgroupationComponent', () => {
-  let component: DialogCreateAgroupationComponent;
-  let fixture: ComponentFixture<DialogCreateAgroupationComponent>;
+describe('DialogCreateGroupComponent', () => {
+  let component: DialogCreateGroupComponent;
+  let fixture: ComponentFixture<DialogCreateGroupComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DialogCreateAgroupationComponent],
+      imports: [DialogCreateGroupComponent],
       providers: [
         { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DialogCreateAgroupationComponent);
+    fixture = TestBed.createComponent(DialogCreateGroupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

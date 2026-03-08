@@ -12,11 +12,11 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './material.module';
-import { AgroupationComponent } from './views/agroupation/agroupation.component';
+import { GroupComponent } from './views/group/group.component';
 import { MainMenuComponent } from './views/main-menu/main-menu.component';
 
 @NgModule({
-  declarations: [AppComponent, MainMenuComponent, AgroupationComponent],
+  declarations: [AppComponent, MainMenuComponent, GroupComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

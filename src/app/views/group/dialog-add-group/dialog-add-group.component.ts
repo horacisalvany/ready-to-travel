@@ -8,17 +8,17 @@ import {
 } from '@angular/material/dialog';
 
 @Component({
-  selector: 'dialog-add-agroupation',
-  templateUrl: './dialog-add-agroupation.component.html',
-  styleUrls: ['./dialog-add-agroupation.component.scss'],
+  selector: 'dialog-add-group',
+  templateUrl: './dialog-add-group.component.html',
+  styleUrls: ['./dialog-add-group.component.scss'],
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
-export class DialogCreateAgroupationComponent {
+export class DialogCreateGroupComponent {
   result: string = '';
 
   constructor(
-    public dialogRef: MatDialogRef<DialogCreateAgroupationComponent>,
+    public dialogRef: MatDialogRef<DialogCreateGroupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 

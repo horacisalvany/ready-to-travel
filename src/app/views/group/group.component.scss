@@ -5,28 +5,28 @@
 - more examples: https://freefrontend.com/css-lists/ */
 
 h1 {
-  font-family: "Norican", cursive;
-  color: saddlebrown;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #1e293b;
+  letter-spacing: -0.3px;
+  margin: 0 0 0 8px;
+  padding-bottom: 6px;
   position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 2rem;
-  align-items: center;
-  justify-content: center;
-  @media only screen and (orientation: landscape) {
-    font-size: 4rem;
-    margin: 2rem;
-    padding-bottom: 24px;
 
-    &::before,
-    &::after {
-      content: "";
-      display: block;
-      width: 5rem;
-      height: 2px;
-      background-color: currentColor;
-      margin: 0 1rem;
-    }
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 36px;
+    height: 3px;
+    background: linear-gradient(90deg, #3f51b5, #9c27b0);
+    border-radius: 2px;
+  }
+
+  @media only screen and (orientation: landscape) {
+    font-size: 2rem;
   }
 }
 

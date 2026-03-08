@@ -42,7 +42,7 @@ export class ListsComponent implements OnInit {
       width: '250px',
       enterAnimationDuration,
       exitAnimationDuration,
-      data: { idsAgroupation: [] },
+      data: { idsGroup: [] },
     });
 
     dialogRef.afterClosed().subscribe((titleList: string) => {
