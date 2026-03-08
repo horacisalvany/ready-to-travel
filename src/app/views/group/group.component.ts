@@ -1,4 +1,5 @@
 import {
+  CdkDrag,
   CdkDragDrop,
   moveItemInArray,
   transferArrayItem,
@@ -79,6 +80,11 @@ export class GroupComponent implements OnInit {
   }
 
   dropTrash(event: CdkDragDrop<string[]>) {
+    const dragData = event.item.data;
+    if (dragData?.type === 'group') {
+      this.groupService.deleteGroup(dragData.id).subscribe();
+      return;
+    }
     const prevContainerId = event.previousContainer.id;
     const group = this.groups.find(
       (a) => 'cdk-drop-list-' + a.id === prevContainerId
@@ -88,6 +94,13 @@ export class GroupComponent implements OnInit {
       this.updateFirebase(group.id, group.items);
     }
   }
+
+  dropGroupCard(_event: CdkDragDrop<any[]>) {
+    // Group order is managed by Firebase; no local reorder needed
+  }
+
+  groupCardPredicate = (drag: CdkDrag) => drag.data?.type === 'group';
+  itemPredicate = (drag: CdkDrag) => drag.data?.type === 'item';
 
   onDelete(groupIndex: number, elementIndex: number) {
     const group = this.groups[groupIndex];

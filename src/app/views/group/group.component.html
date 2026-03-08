@@ -12,25 +12,41 @@
     </button>
   </div>
   <div class="container">
-    <div class="row">
+    <div
+      class="row"
+      cdkDropList
+      id="group-cards"
+      cdkDropListOrientation="horizontal"
+      [cdkDropListEnterPredicate]="groupCardPredicate"
+      (cdkDropListDropped)="dropGroupCard($event)"
+    >
       <div
         *ngFor="let group of groups; let i = index"
         class="col-md-4"
+        cdkDrag
+        [cdkDragData]="{ type: 'group', id: group.id }"
       >
-        <h2>{{ group.title }}</h2>
+        <div class="group-header" cdkDragHandle>
+          <mat-icon class="drag-handle">drag_indicator</mat-icon>
+          <h2>{{ group.title }}</h2>
+        </div>
         <mat-list
           role="list"
           cdkDropList
           [cdkDropListData]="group.items"
           (cdkDropListDropped)="drop($event)"
           [id]="'cdk-drop-list-' + group.id"
+          [cdkDropListEnterPredicate]="itemPredicate"
         >
           <input type="text" maxlength="20" (change)="change($event)" />
           <button (click)="onAdd(i)">Add</button>
 
-          <mat-list-item cdkDrag *ngFor="let item of group.items">{{
-            item
-          }}</mat-list-item>
+          <mat-list-item
+            cdkDrag
+            [cdkDragData]="{ type: 'item' }"
+            *ngFor="let item of group.items"
+            >{{ item }}</mat-list-item
+          >
         </mat-list>
       </div>
     </div>
