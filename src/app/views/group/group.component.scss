@@ -1,9 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Grape+Nuts&family=Norican&display=swap");
-/* CSS taken from this websites:
-- https://codepen.io/michellebarker/pen/jOzOqNg
-- https://codepen.io/wheatup/pen/GRyxmRb
-- more examples: https://freefrontend.com/css-lists/ */
-
 h1 {
   font-family: "Poppins", sans-serif;
   font-weight: 700;
@@ -55,6 +49,41 @@ mat-list-item {
   }
 }
 
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  h2 {
+    margin: 0;
+    flex: 1;
+  }
+}
+
+.drag-handle {
+  color: #9c27b0;
+  font-size: 20px;
+  opacity: 0.5;
+  flex-shrink: 0;
+  transition: opacity 150ms ease;
+
+  .group-header:hover & {
+    opacity: 1;
+  }
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  border: 2px dashed #9c27b0;
+  border-radius: 8px;
+  background: transparent;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
@@ -67,20 +96,28 @@ mat-list-item {
 }
 
 .trash-icon {
-  font-size: 48px;
-  color: #888;
-  right: 0;
   position: fixed;
-  top: 50%;
-  @media only screen and (orientation: landscape) {
-    top: auto;
-    right: 100px;
-    font-size: 100px;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #94a3b8;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 50%;
+  transition: color 200ms ease, border-color 200ms ease, background 200ms ease;
 
-    &:hover {
-      color: red;
-    }
+  &:hover {
+    color: #9c27b0;
+    border-color: #9c27b0;
+    border-style: solid;
+    background: #f3e5f5;
   }
+
   .cdk-drag-placeholder {
     display: none;
   }
