@@ -239,6 +239,57 @@ describe('GroupComponent', () => {
 
   // --- openDialogAddGroup ---
 
+  // --- recentlyDropped guard ---
+
+  it('should not open dialog if called right after dropTrash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'group-cards' },
+      container: { id: 'trash' },
+      item: { data: { type: 'group', id: 'g1' } },
+    } as unknown as CdkDragDrop<string[]>;
+
+    component.dropTrash(event);
+    component.openDialogAddGroup();
+
+    expect(mockDialog.open).not.toHaveBeenCalled();
+  });
+
+  it('should not open dialog if called right after dropGroupCard', () => {
+    const event = {
+      previousIndex: 0,
+      currentIndex: 1,
+    } as unknown as CdkDragDrop<any[]>;
+
+    component.dropGroupCard(event);
+    component.openDialogAddGroup();
+
+    expect(mockDialog.open).not.toHaveBeenCalled();
+  });
+
+  it('should open dialog again after recentlyDropped flag resets', (done) => {
+    const trashEvent = {
+      previousIndex: 0,
+      previousContainer: { id: 'group-cards' },
+      container: { id: 'trash' },
+      item: { data: { type: 'group', id: 'g1' } },
+    } as unknown as CdkDragDrop<string[]>;
+
+    component.dropTrash(trashEvent);
+
+    setTimeout(() => {
+      const dialogRef = {
+        afterClosed: () => of('New Group'),
+      } as MatDialogRef<any>;
+      mockDialog.open.and.returnValue(dialogRef);
+
+      component.openDialogAddGroup();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      done();
+    });
+  });
+
   it('should open dialog and call addGroup when title is returned', () => {
     const dialogRef = {
       afterClosed: () => of('New Group'),

@@ -17,20 +17,20 @@ import { DialogCreateGroupComponent } from './dialog-add-group/dialog-add-group.
 })
 export class GroupComponent implements OnInit {
   groups: Group[] = [];
+  /*
+    Boolean to control that something has been dropped. Without there are bugs like missclicks after you drop a list on the trash
+    and the popup of add a new list is opened for no reason.
+   */
+  private recentlyDropped = false;
 
-  constructor(
-    private groupService: GroupService,
-    public dialog: MatDialog
-  ) {}
+  constructor(private groupService: GroupService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loadgroups();
   }
 
   loadgroups() {
-    this.groupService
-      .getGroups()
-      .subscribe((result) => (this.groups = result));
+    this.groupService.getGroups().subscribe((result) => (this.groups = result));
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -79,6 +79,7 @@ export class GroupComponent implements OnInit {
   }
 
   dropTrash(event: CdkDragDrop<string[]>) {
+    this.markRecentlyDropped();
     const dragData = event.item.data;
     if (dragData?.type === 'group') {
       this.groupService.deleteGroup(dragData.id).subscribe();
@@ -94,8 +95,14 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  dropGroupCard(_event: CdkDragDrop<any[]>) {
+  dropGroupCard(event: CdkDragDrop<any[]>) {
+    this.markRecentlyDropped();
     // Group order is managed by Firebase; no local reorder needed
+  }
+
+  private markRecentlyDropped(): void {
+    this.recentlyDropped = true;
+    setTimeout(() => (this.recentlyDropped = false));
   }
 
   groupCardPredicate = (drag: CdkDrag) => drag.data?.type === 'group';
@@ -116,6 +123,7 @@ export class GroupComponent implements OnInit {
   }
 
   openDialogAddGroup(): void {
+    if (this.recentlyDropped) return;
     const dialogRef = this.dialog.open(DialogCreateGroupComponent, {
       width: '250px',
       data: {},

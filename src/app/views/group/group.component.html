@@ -38,6 +38,12 @@
           [id]="'cdk-drop-list-' + group.id"
           [cdkDropListEnterPredicate]="itemPredicate"
         >
+          <mat-list-item
+            cdkDrag
+            [cdkDragData]="{ type: 'item' }"
+            *ngFor="let item of group.items"
+            >{{ item }}</mat-list-item
+          >
           <div class="add-item-row">
             <input
               #itemInput
@@ -53,13 +59,6 @@
               <mat-icon>add</mat-icon>
             </button>
           </div>
-
-          <mat-list-item
-            cdkDrag
-            [cdkDragData]="{ type: 'item' }"
-            *ngFor="let item of group.items"
-            >{{ item }}</mat-list-item
-          >
         </mat-list>
       </div>
     </div>

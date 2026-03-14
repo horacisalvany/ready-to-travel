@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
@@ -14,10 +15,15 @@ import { ListService } from './list.service';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
   standalone: true,
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, DragDropModule],
 })
 export class ListComponent implements OnInit {
   list: List | undefined;
+  /*
+    Boolean to control that something has been dropped. Without there are bugs like missclicks after you drop a list on the trash
+    and the popup of add a new list is opened for no reason.
+   */
+  private recentlyDropped = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,6 +44,7 @@ export class ListComponent implements OnInit {
   }
 
   openDialogAddGroup(): void {
+    if (this.recentlyDropped) return;
     this.groupService.getGroups().subscribe((allGroups) => {
       const dialogRef = this.dialog.open(DialogAddGroupComponent, {
         width: '250px',
@@ -47,9 +54,7 @@ export class ListComponent implements OnInit {
       dialogRef.afterClosed().subscribe((selectedGroups: Group[]) => {
         if (selectedGroups && this.list) {
           selectedGroups.forEach((group) => {
-            this.listService
-              .addSectionToList(this.list!.id, group)
-              .subscribe();
+            this.listService.addSectionToList(this.list!.id, group).subscribe();
           });
         }
       });
@@ -67,10 +72,18 @@ export class ListComponent implements OnInit {
     }
   }
 
-  onRemoveSection(sectionId: string): void {
-    if (!this.list) return;
-    this.listService
-      .removeSectionFromList(this.list.id, sectionId)
-      .subscribe();
+  dropTrash(event: CdkDragDrop<any>): void {
+    this.markRecentlyDropped();
+    const dragData = event.item.data;
+    if (dragData?.type === 'section' && this.list) {
+      this.listService
+        .removeSectionFromList(this.list.id, dragData.id)
+        .subscribe();
+    }
+  }
+
+  private markRecentlyDropped(): void {
+    this.recentlyDropped = true;
+    setTimeout(() => (this.recentlyDropped = false));
   }
 }

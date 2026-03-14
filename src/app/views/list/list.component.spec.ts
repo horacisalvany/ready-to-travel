@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { CdkDropList, DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { ListComponent } from './list.component';
@@ -57,7 +59,7 @@ describe('ListComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [ListComponent, MatDialogModule, MatListModule, MatIconModule],
+      imports: [ListComponent, MatDialogModule, MatListModule, MatIconModule, DragDropModule],
       providers: [
         { provide: ListService, useValue: mockListService },
         { provide: GroupService, useValue: mockGroupService },
@@ -128,22 +130,107 @@ describe('ListComponent', () => {
     expect(mockListService.updateSectionItems).not.toHaveBeenCalled();
   });
 
-  // --- onRemoveSection ---
+  // --- drag & drop setup ---
 
-  it('should call removeSectionFromList when removing a section', () => {
-    component.onRemoveSection('s1');
+  it('should have a cdkDropList on the section container', () => {
+    const sectionContainer = fixture.debugElement.query(By.css('#section-cards'));
+    expect(sectionContainer).toBeTruthy();
+    const dropList = sectionContainer.injector.get(CdkDropList, null);
+    expect(dropList).toBeTruthy();
+  });
 
-    expect(mockListService.removeSectionFromList).toHaveBeenCalledWith(
-      'list1',
-      's1'
-    );
+  it('should have a cdkDropList on the trash icon', () => {
+    const trashEl = fixture.debugElement.query(By.css('.trash-icon'));
+    expect(trashEl).toBeTruthy();
+    const dropList = trashEl.injector.get(CdkDropList, null);
+    expect(dropList).toBeTruthy();
+  });
+
+  it('should render sections as cdkDrag elements', () => {
+    const dragElements = fixture.debugElement.queryAll(By.css('[cdkDrag]'));
+    expect(dragElements.length).toBe(2);
+  });
+
+  // --- dropTrash ---
+
+  it('should remove a section when dropped on trash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'sections' },
+      container: { id: 'trash' },
+      item: { data: { type: 'section', id: 's1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.removeSectionFromList).toHaveBeenCalledWith('list1', 's1');
+  });
+
+  it('should not remove section when drag data type is not section', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'sections' },
+      container: { id: 'trash' },
+      item: { data: { type: 'other', id: 'x1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.removeSectionFromList).not.toHaveBeenCalled();
   });
 
   it('should not remove section when list is undefined', () => {
     component.list = undefined;
-    component.onRemoveSection('s1');
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'sections' },
+      container: { id: 'trash' },
+      item: { data: { type: 'section', id: 's1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
 
     expect(mockListService.removeSectionFromList).not.toHaveBeenCalled();
+  });
+
+  // --- recentlyDropped guard ---
+
+  it('should not open dialog if called right after dropTrash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'sections' },
+      container: { id: 'trash' },
+      item: { data: { type: 'section', id: 's1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+    component.openDialogAddGroup();
+
+    expect(mockGroupService.getGroups).not.toHaveBeenCalled();
+  });
+
+  it('should open dialog again after recentlyDropped flag resets', (done) => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'sections' },
+      container: { id: 'trash' },
+      item: { data: { type: 'section', id: 's1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    setTimeout(() => {
+      mockGroupService.getGroups.calls.reset();
+      const selectedGroups = [MOCK_GROUPS[0]];
+      const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+      dialogRef.afterClosed.and.returnValue(of(selectedGroups));
+      spyOn(component.dialog, 'open').and.returnValue(dialogRef);
+
+      component.openDialogAddGroup();
+
+      expect(mockGroupService.getGroups).toHaveBeenCalled();
+      done();
+    });
   });
 
   // --- openDialogAddGroup ---
@@ -206,7 +293,7 @@ describe('ListComponent', () => {
 
     await TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
-      imports: [ListComponent, MatDialogModule, MatListModule, MatIconModule],
+      imports: [ListComponent, MatDialogModule, MatListModule, MatIconModule, DragDropModule],
       providers: [
         { provide: ListService, useValue: mockListService },
         { provide: GroupService, useValue: mockGroupService },
