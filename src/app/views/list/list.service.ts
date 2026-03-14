@@ -7,6 +7,8 @@ import { Group } from '../group/group';
 import { List } from '../lists/list';
 import { Section } from './section';
 
+export const UNGROUPED_SECTION_TITLE = 'Ungrouped';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -24,12 +26,19 @@ export class ListService {
 
   private parseSections(sectionsObj: any): Section[] {
     if (!sectionsObj || typeof sectionsObj !== 'object') return [];
-    return Object.keys(sectionsObj).map((key) => ({
+    const sections = Object.keys(sectionsObj).map((key) => ({
       id: key,
       title: sectionsObj[key]?.title ?? 'Untitled',
       items: sectionsObj[key]?.items ?? [],
       sourceGroupId: sectionsObj[key]?.sourceGroupId,
     }));
+    // Ensure "Ungrouped" section is always first
+    sections.sort((a, b) => {
+      if (a.title === UNGROUPED_SECTION_TITLE) return -1;
+      if (b.title === UNGROUPED_SECTION_TITLE) return 1;
+      return 0;
+    });
+    return sections;
   }
 
   getLists(): Observable<List[]> {
@@ -81,7 +90,15 @@ export class ListService {
       switchMap((path) => {
         if (!path) return of(null);
         return from(
-          this.db.list(`${path}/lists`).push({ title })
+          this.db.list(`${path}/lists`).push({
+            title,
+            sections: {
+              ungrouped: {
+                title: UNGROUPED_SECTION_TITLE,
+                items: [],
+              },
+            },
+          })
         ).pipe(map((ref) => ref.key));
       })
     );

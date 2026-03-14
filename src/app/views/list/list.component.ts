@@ -8,7 +8,7 @@ import { Group } from '../group/group';
 import { GroupService } from '../group/group.service';
 import { List } from '../lists/list';
 import { DialogAddGroupComponent } from './dialog-add-group/dialog-add-group.component';
-import { ListService } from './list.service';
+import { ListService, UNGROUPED_SECTION_TITLE } from './list.service';
 
 @Component({
   selector: 'list',
@@ -72,10 +72,16 @@ export class ListComponent implements OnInit {
     }
   }
 
+  isUngroupedSection(title: string): boolean {
+    return title === UNGROUPED_SECTION_TITLE;
+  }
+
   dropTrash(event: CdkDragDrop<any>): void {
     this.markRecentlyDropped();
     const dragData = event.item.data;
     if (dragData?.type === 'section' && this.list) {
+      const section = this.list.sections.find((s) => s.id === dragData.id);
+      if (section && this.isUngroupedSection(section.title)) return;
       this.listService
         .removeSectionFromList(this.list.id, dragData.id)
         .subscribe();

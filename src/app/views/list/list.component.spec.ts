@@ -7,13 +7,14 @@ import { CdkDropList, DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { ListComponent } from './list.component';
-import { ListService } from './list.service';
+import { ListService, UNGROUPED_SECTION_TITLE } from './list.service';
 import { GroupService } from '../group/group.service';
 import { Group } from '../group/group';
 import { List } from '../lists/list';
 import { Section } from './section';
 
 const MOCK_SECTIONS: Section[] = [
+  { id: 'ungrouped', title: UNGROUPED_SECTION_TITLE, items: [] },
   { id: 's1', title: 'Packing', items: ['Passport', 'Tickets'], sourceGroupId: 'g1' },
   { id: 's2', title: 'Electronics', items: ['Phone', 'Charger'], sourceGroupId: 'g3' },
 ];
@@ -90,9 +91,10 @@ describe('ListComponent', () => {
   });
 
   it('should have sections from the loaded list', () => {
-    expect(component.list!.sections.length).toBe(2);
-    expect(component.list!.sections[0].title).toBe('Packing');
-    expect(component.list!.sections[1].title).toBe('Electronics');
+    expect(component.list!.sections.length).toBe(3);
+    expect(component.list!.sections[0].title).toBe(UNGROUPED_SECTION_TITLE);
+    expect(component.list!.sections[1].title).toBe('Packing');
+    expect(component.list!.sections[2].title).toBe('Electronics');
   });
 
   // --- onAddItemToSection ---
@@ -148,7 +150,27 @@ describe('ListComponent', () => {
 
   it('should render sections as cdkDrag elements', () => {
     const dragElements = fixture.debugElement.queryAll(By.css('[cdkDrag]'));
-    expect(dragElements.length).toBe(2);
+    expect(dragElements.length).toBe(3);
+  });
+
+  // --- ungrouped section ---
+
+  it('should identify ungrouped section correctly', () => {
+    expect(component.isUngroupedSection(UNGROUPED_SECTION_TITLE)).toBeTrue();
+    expect(component.isUngroupedSection('Packing')).toBeFalse();
+  });
+
+  it('should not remove ungrouped section when dropped on trash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'sections' },
+      container: { id: 'trash' },
+      item: { data: { type: 'section', id: 'ungrouped' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.removeSectionFromList).not.toHaveBeenCalled();
   });
 
   // --- dropTrash ---
