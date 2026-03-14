@@ -5,7 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { CdkDropList, DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ListComponent } from './list.component';
 import { ListService, UNGROUPED_SECTION_TITLE } from './list.service';
 import { GroupService } from '../group/group.service';
@@ -306,6 +306,27 @@ describe('ListComponent', () => {
     component.openDialogAddGroup();
 
     expect(mockListService.addSectionToList).not.toHaveBeenCalled();
+  });
+
+  // --- openDialogAddGroup should only open dialog once (take(1)) ---
+
+  it('should only open the dialog once even if getGroups emits multiple times', () => {
+    const groups$ = new Subject<Group[]>();
+    mockGroupService.getGroups.and.returnValue(groups$);
+
+    const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    dialogRef.afterClosed.and.returnValue(of(undefined));
+    spyOn(component.dialog, 'open').and.returnValue(dialogRef);
+
+    component.openDialogAddGroup();
+
+    // First emission — should open the dialog
+    groups$.next(MOCK_GROUPS);
+    expect(component.dialog.open).toHaveBeenCalledTimes(1);
+
+    // Second emission (e.g. a new group was added in Firebase) — should NOT open again
+    groups$.next([...MOCK_GROUPS, { id: 'g4', title: 'New', items: [] }]);
+    expect(component.dialog.open).toHaveBeenCalledTimes(1);
   });
 
   // --- route param handling ---

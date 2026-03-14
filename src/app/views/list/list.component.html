@@ -5,14 +5,13 @@
     class="material-icons trash-icon"
     >restore_from_trash</span
   >
-  <div class="button-row">
-    <h1 class="title">{{ list?.title }}</h1>
-    <button (click)="openDialogAddGroup()" mat-icon-button>
-      <mat-icon>add</mat-icon>
-    </button>
-  </div>
-
   <div class="container">
+    <div class="button-row">
+      <h1 class="title">{{ list?.title }}</h1>
+      <button (click)="openDialogAddGroup()" mat-icon-button>
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
     <div class="row" cdkDropList id="section-cards">
       <div
         *ngFor="let section of list?.sections; let i = index"

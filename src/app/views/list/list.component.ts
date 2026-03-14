@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { MaterialModule } from 'src/app/material.module';
 import { Group } from '../group/group';
 import { GroupService } from '../group/group.service';
@@ -45,7 +46,7 @@ export class ListComponent implements OnInit {
 
   openDialogAddGroup(): void {
     if (this.recentlyDropped) return;
-    this.groupService.getGroups().subscribe((allGroups) => {
+    this.groupService.getGroups().pipe(take(1)).subscribe((allGroups) => {
       const dialogRef = this.dialog.open(DialogAddGroupComponent, {
         width: '250px',
         data: { allGroups },
