@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
@@ -14,12 +15,15 @@ import { ListService } from './list.service';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
   standalone: true,
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, DragDropModule],
 })
 export class ListComponent implements OnInit {
   list: List | undefined;
-  groups: Group[] = [];
-  allGroups: Group[] = [];
+  /*
+    Boolean to control that something has been dropped. Without there are bugs like missclicks after you drop a list on the trash
+    and the popup of add a new list is opened for no reason.
+   */
+  private recentlyDropped = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,49 +33,57 @@ export class ListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.groupService
-      .getGroups()
-      .subscribe((all) => {
-        this.allGroups = all;
-        this.updateDisplayedGroups();
-      });
-
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
         this.listService.getList(id).subscribe((list) => {
           this.list = list;
-          this.updateDisplayedGroups();
         });
       }
     });
   }
 
-  private updateDisplayedGroups() {
-    if (!this.list || !this.allGroups.length) return;
-    this.groups = this.allGroups.filter((a) =>
-      this.list!.groupIds.includes(a.id)
-    );
+  openDialogAddGroup(): void {
+    if (this.recentlyDropped) return;
+    this.groupService.getGroups().subscribe((allGroups) => {
+      const dialogRef = this.dialog.open(DialogAddGroupComponent, {
+        width: '250px',
+        data: { allGroups },
+      });
+
+      dialogRef.afterClosed().subscribe((selectedGroups: Group[]) => {
+        if (selectedGroups && this.list) {
+          selectedGroups.forEach((group) => {
+            this.listService.addSectionToList(this.list!.id, group).subscribe();
+          });
+        }
+      });
+    });
   }
 
-  openDialogAddGroup(
-    enterAnimationDuration: string = '0ms',
-    exitAnimationDuration: string = '0ms'
-  ): void {
-    const dialogRef = this.dialog.open(DialogAddGroupComponent, {
-      width: '250px',
-      enterAnimationDuration,
-      exitAnimationDuration,
-      data: { allGroups: this.allGroups },
-    });
+  onAddItemToSection(sectionId: string, item: string): void {
+    if (!this.list || !item.trim()) return;
+    const section = this.list.sections.find((s) => s.id === sectionId);
+    if (section) {
+      const updatedItems = [...section.items, item.trim()];
+      this.listService
+        .updateSectionItems(this.list.id, sectionId, updatedItems)
+        .subscribe();
+    }
+  }
 
-    dialogRef.afterClosed().subscribe((selectedIds: string[]) => {
-      if (selectedIds && this.list) {
-        const merged = [...new Set([...this.list.groupIds, ...selectedIds])];
-        this.listService
-          .updateListGroups(this.list.id, merged)
-          .subscribe();
-      }
-    });
+  dropTrash(event: CdkDragDrop<any>): void {
+    this.markRecentlyDropped();
+    const dragData = event.item.data;
+    if (dragData?.type === 'section' && this.list) {
+      this.listService
+        .removeSectionFromList(this.list.id, dragData.id)
+        .subscribe();
+    }
+  }
+
+  private markRecentlyDropped(): void {
+    this.recentlyDropped = true;
+    setTimeout(() => (this.recentlyDropped = false));
   }
 }

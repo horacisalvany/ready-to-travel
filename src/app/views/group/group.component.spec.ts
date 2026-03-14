@@ -63,25 +63,24 @@ describe('GroupComponent', () => {
     expect(component.groups[1].title).toBe('Documents');
   });
 
-  // --- change ---
-
-  it('should store the last input value on change', () => {
-    const event = { target: { value: 'Sunglasses' } };
-    component.change(event);
-    expect(component.lastInputValue).toBe('Sunglasses');
-  });
-
   // --- onAdd ---
 
   it('should add an item to the group and update Firebase', () => {
-    component.lastInputValue = 'Sunglasses';
-    component.onAdd(0);
+    const input = { value: 'Sunglasses' } as HTMLInputElement;
+    component.onAdd(0, input);
 
     expect(component.groups[0].items).toContain('Sunglasses');
     expect(mockGroupService.updateGroup).toHaveBeenCalledWith(
       'g1',
       component.groups[0].items
     );
+  });
+
+  it('should not add empty or whitespace-only items', () => {
+    const input = { value: '   ' } as HTMLInputElement;
+    component.onAdd(0, input);
+
+    expect(mockGroupService.updateGroup).not.toHaveBeenCalled();
   });
 
   // --- onDelete ---
@@ -239,6 +238,57 @@ describe('GroupComponent', () => {
   });
 
   // --- openDialogAddGroup ---
+
+  // --- recentlyDropped guard ---
+
+  it('should not open dialog if called right after dropTrash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'group-cards' },
+      container: { id: 'trash' },
+      item: { data: { type: 'group', id: 'g1' } },
+    } as unknown as CdkDragDrop<string[]>;
+
+    component.dropTrash(event);
+    component.openDialogAddGroup();
+
+    expect(mockDialog.open).not.toHaveBeenCalled();
+  });
+
+  it('should not open dialog if called right after dropGroupCard', () => {
+    const event = {
+      previousIndex: 0,
+      currentIndex: 1,
+    } as unknown as CdkDragDrop<any[]>;
+
+    component.dropGroupCard(event);
+    component.openDialogAddGroup();
+
+    expect(mockDialog.open).not.toHaveBeenCalled();
+  });
+
+  it('should open dialog again after recentlyDropped flag resets', (done) => {
+    const trashEvent = {
+      previousIndex: 0,
+      previousContainer: { id: 'group-cards' },
+      container: { id: 'trash' },
+      item: { data: { type: 'group', id: 'g1' } },
+    } as unknown as CdkDragDrop<string[]>;
+
+    component.dropTrash(trashEvent);
+
+    setTimeout(() => {
+      const dialogRef = {
+        afterClosed: () => of('New Group'),
+      } as MatDialogRef<any>;
+      mockDialog.open.and.returnValue(dialogRef);
+
+      component.openDialogAddGroup();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      done();
+    });
+  });
 
   it('should open dialog and call addGroup when title is returned', () => {
     const dialogRef = {

@@ -1,39 +1,146 @@
-import { TestBed } from '@angular/core/testing';
-import { ListsComponent } from './lists.component';
-import { ActivatedRoute } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { ListsComponent } from './lists.component';
 import { ListService } from '../list/list.service';
+import { List } from './list';
 
-const mockListService = {
-  getLists: () => of([]),
-  addList: jasmine.createSpy('addList').and.returnValue(of('key1')),
-};
+const MOCK_LISTS: List[] = [
+  { id: 'l1', title: 'Paris Trip', sections: [] },
+  { id: 'l2', title: 'Weekend Getaway', sections: [] },
+];
 
 describe('ListsComponent', () => {
+  let component: ListsComponent;
+  let fixture: ComponentFixture<ListsComponent>;
+  let mockListService: jasmine.SpyObj<ListService>;
+  let mockRouter: jasmine.SpyObj<Router>;
+
   beforeEach(async () => {
+    mockListService = jasmine.createSpyObj('ListService', [
+      'getLists',
+      'addList',
+      'deleteList',
+    ]);
+    mockListService.getLists.and.returnValue(
+      of(MOCK_LISTS.map((l) => ({ ...l })))
+    );
+    mockListService.addList.and.returnValue(of('newKey'));
+    mockListService.deleteList.and.returnValue(of(undefined));
+
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+
     await TestBed.configureTestingModule({
-      imports: [ListsComponent],
+      imports: [
+        ListsComponent,
+        MatDialogModule,
+        MatListModule,
+        MatIconModule,
+        DragDropModule,
+      ],
       providers: [
         { provide: ListService, useValue: mockListService },
+        { provide: Router, useValue: mockRouter },
         {
           provide: ActivatedRoute,
           useValue: {
             params: of({ id: '123' }),
-            queryParams: of({ filter: 'all' }),
-            snapshot: {
-              paramMap: {
-                get: (key: string) => '123',
-              },
-            },
           },
         },
       ],
     }).compileComponents();
+
+    fixture = TestBed.createComponent(ListsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
-    const fixture = TestBed.createComponent(ListsComponent);
-    const component = fixture.componentInstance;
     expect(component).toBeTruthy();
+  });
+
+  // --- ngOnInit / loading ---
+
+  it('should load lists on init', () => {
+    expect(mockListService.getLists).toHaveBeenCalled();
+    expect(component.lists.length).toBe(2);
+    expect(component.lists[0].title).toBe('Paris Trip');
+  });
+
+  // --- onClickList ---
+
+  it('should navigate to the list detail view', () => {
+    component.onClickList('l1');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(
+      ['l1'],
+      jasmine.any(Object)
+    );
+  });
+
+  // --- dropTrash ---
+
+  it('should delete the list when dropped on trash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'lists-container' },
+      container: { id: 'trash' },
+      item: { data: 'l1' },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.deleteList).toHaveBeenCalledWith('l1');
+  });
+
+  it('should not delete when drag data is empty', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'lists-container' },
+      container: { id: 'trash' },
+      item: { data: '' },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.deleteList).not.toHaveBeenCalled();
+  });
+
+  // --- dropList ---
+
+  it('should not throw when a list item is dropped back into the list', () => {
+    const event = {
+      previousIndex: 0,
+      currentIndex: 1,
+    } as unknown as CdkDragDrop<any>;
+
+    expect(() => component.dropList(event)).not.toThrow();
+  });
+
+  // --- openDialogAddList ---
+
+  it('should open dialog and create list on confirm', () => {
+    const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    dialogRef.afterClosed.and.returnValue(of('Beach Holiday'));
+    spyOn(component.dialog, 'open').and.returnValue(dialogRef);
+
+    component.openDialogAddList();
+
+    expect(component.dialog.open).toHaveBeenCalled();
+    expect(mockListService.addList).toHaveBeenCalledWith('Beach Holiday');
+  });
+
+  it('should not create list when dialog is cancelled', () => {
+    const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    dialogRef.afterClosed.and.returnValue(of(undefined));
+    spyOn(component.dialog, 'open').and.returnValue(dialogRef);
+
+    component.openDialogAddList();
+
+    expect(component.dialog.open).toHaveBeenCalled();
+    expect(mockListService.addList).not.toHaveBeenCalled();
   });
 });

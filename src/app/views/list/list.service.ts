@@ -3,7 +3,9 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { from, Observable, of, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
+import { Group } from '../group/group';
 import { List } from '../lists/list';
+import { Section } from './section';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +22,16 @@ export class ListService {
     );
   }
 
+  private parseSections(sectionsObj: any): Section[] {
+    if (!sectionsObj || typeof sectionsObj !== 'object') return [];
+    return Object.keys(sectionsObj).map((key) => ({
+      id: key,
+      title: sectionsObj[key]?.title ?? 'Untitled',
+      items: sectionsObj[key]?.items ?? [],
+      sourceGroupId: sectionsObj[key]?.sourceGroupId,
+    }));
+  }
+
   getLists(): Observable<List[]> {
     return this.userPath().pipe(
       switchMap((path) => {
@@ -34,7 +46,7 @@ export class ListService {
                 return {
                   id: c.payload.key!,
                   title: data?.title ?? 'Untitled',
-                  groupIds: data?.groupIds ?? [],
+                  sections: this.parseSections(data?.sections),
                 } as List;
               })
             )
@@ -56,7 +68,7 @@ export class ListService {
               return {
                 id,
                 title: data.title,
-                groupIds: data.groupIds ?? [],
+                sections: this.parseSections(data.sections),
               } as List;
             })
           );
@@ -69,7 +81,7 @@ export class ListService {
       switchMap((path) => {
         if (!path) return of(null);
         return from(
-          this.db.list(`${path}/lists`).push({ title, groupIds: [] })
+          this.db.list(`${path}/lists`).push({ title })
         ).pipe(map((ref) => ref.key));
       })
     );
@@ -84,15 +96,45 @@ export class ListService {
     );
   }
 
-  updateListGroups(
+  addSectionToList(listId: string, group: Group): Observable<string | null> {
+    return this.userPath().pipe(
+      switchMap((path) => {
+        if (!path) return of(null);
+        const sectionData = {
+          title: group.title,
+          items: [...group.items],
+          sourceGroupId: group.id,
+        };
+        return from(
+          this.db.list(`${path}/lists/${listId}/sections`).push(sectionData)
+        ).pipe(map((ref) => ref.key));
+      })
+    );
+  }
+
+  removeSectionFromList(listId: string, sectionId: string): Observable<void> {
+    return this.userPath().pipe(
+      switchMap((path) => {
+        if (!path) return of(undefined as void);
+        return from(
+          this.db.list(`${path}/lists/${listId}/sections`).remove(sectionId)
+        );
+      })
+    );
+  }
+
+  updateSectionItems(
     listId: string,
-    groupIds: string[]
+    sectionId: string,
+    items: string[]
   ): Observable<void> {
     return this.userPath().pipe(
       switchMap((path) => {
         if (!path) return of(undefined as void);
         return from(
-          this.db.list(`${path}/lists`).update(listId, { groupIds: groupIds })
+          this.db
+            .object(`${path}/lists/${listId}/sections/${sectionId}`)
+            .update({ items })
         );
       })
     );

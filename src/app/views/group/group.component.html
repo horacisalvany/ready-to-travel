@@ -38,15 +38,27 @@
           [id]="'cdk-drop-list-' + group.id"
           [cdkDropListEnterPredicate]="itemPredicate"
         >
-          <input type="text" maxlength="20" (change)="change($event)" />
-          <button (click)="onAdd(i)">Add</button>
-
           <mat-list-item
             cdkDrag
             [cdkDragData]="{ type: 'item' }"
             *ngFor="let item of group.items"
             >{{ item }}</mat-list-item
           >
+          <div class="add-item-row">
+            <input
+              #itemInput
+              type="text"
+              maxlength="40"
+              placeholder="New item..."
+              (keyup.enter)="onAdd(i, itemInput); itemInput.value = ''"
+            />
+            <button
+              mat-icon-button
+              (click)="onAdd(i, itemInput); itemInput.value = ''"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
         </mat-list>
       </div>
     </div>

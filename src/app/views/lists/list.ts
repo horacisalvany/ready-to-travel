@@ -1,7 +1,7 @@
-import { Group } from '../group/group';
+import { Section } from '../list/section';
 
 export interface List {
   id: string;
   title: string;
-  groupIds: string[];
+  sections: Section[];
 }
