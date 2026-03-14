@@ -22,7 +22,11 @@ src/app/
     ├── lists/             # Lists overview (travel lists)
     ├── list/              # Single list view with items
     └── group/             # Item aggregation within lists
+    
 ```
+
+## New code
+All new code added must be tested somehow in a unit test.
 
 ## Commands
 
