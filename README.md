@@ -51,3 +51,11 @@ yarn build:prod   # Production build
 yarn test         # Run tests (Karma)
 yarn test:prod    # Headless tests with coverage
 ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to open issues or submit pull requests for any improvements or bug fixes.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
