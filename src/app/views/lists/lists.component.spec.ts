@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { ListsComponent } from './lists.component';
 import { ListService } from '../list/list.service';
+import { ShareService } from '../../services/share.service';
 import { List } from './list';
 
 const MOCK_LISTS: List[] = [
@@ -18,6 +19,7 @@ describe('ListsComponent', () => {
   let component: ListsComponent;
   let fixture: ComponentFixture<ListsComponent>;
   let mockListService: jasmine.SpyObj<ListService>;
+  let mockShareService: jasmine.SpyObj<ShareService>;
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
@@ -32,6 +34,9 @@ describe('ListsComponent', () => {
     mockListService.addList.and.returnValue(of('newKey'));
     mockListService.deleteList.and.returnValue(of(undefined));
 
+    mockShareService = jasmine.createSpyObj('ShareService', ['getSharedLists']);
+    mockShareService.getSharedLists.and.returnValue(of([]));
+
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
@@ -44,6 +49,7 @@ describe('ListsComponent', () => {
       ],
       providers: [
         { provide: ListService, useValue: mockListService },
+        { provide: ShareService, useValue: mockShareService },
         { provide: Router, useValue: mockRouter },
         {
           provide: ActivatedRoute,
@@ -142,5 +148,29 @@ describe('ListsComponent', () => {
 
     expect(component.dialog.open).toHaveBeenCalled();
     expect(mockListService.addList).not.toHaveBeenCalled();
+  });
+
+  // --- shared lists ---
+
+  it('should load shared lists on init', () => {
+    expect(mockShareService.getSharedLists).toHaveBeenCalled();
+  });
+
+  it('should display shared lists when present', () => {
+    const sharedLists = [
+      { id: 'sl1', title: 'Shared Trip', sections: [], ownerEmail: 'friend@test.com', isShared: true },
+    ];
+    mockShareService.getSharedLists.and.returnValue(of(sharedLists as any));
+    component.ngOnInit();
+    expect(component.sharedLists.length).toBe(1);
+    expect(component.sharedLists[0].title).toBe('Shared Trip');
+  });
+
+  it('should navigate to shared list with shared prefix', () => {
+    component.onClickSharedList('sl1');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(
+      ['shared', 'sl1'],
+      jasmine.any(Object)
+    );
   });
 });

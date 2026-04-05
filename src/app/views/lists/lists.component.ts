@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
 import { ListService } from '../list/list.service';
+import { ShareService } from '../../services/share.service';
 import { DialogAddListComponent } from './dialog-add-list/dialog-add-list.component';
 import { List } from './list';
 
@@ -17,20 +18,29 @@ import { List } from './list';
 })
 export class ListsComponent implements OnInit {
   lists: List[] = [];
+  sharedLists: List[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    private listService: ListService
+    private listService: ListService,
+    private shareService: ShareService
   ) {}
 
   ngOnInit(): void {
     this.listService.getLists().subscribe((lists) => (this.lists = lists));
+    this.shareService.getSharedLists().subscribe((lists) => (this.sharedLists = lists));
   }
 
   public onClickList(listId: string) {
     this.router.navigate([listId], {
+      relativeTo: this.route,
+    });
+  }
+
+  public onClickSharedList(listId: string) {
+    this.router.navigate(['shared', listId], {
       relativeTo: this.route,
     });
   }
