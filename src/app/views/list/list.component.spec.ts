@@ -8,6 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { ListComponent } from './list.component';
 import { ListService, UNGROUPED_SECTION_TITLE } from './list.service';
+import { DialogShareListComponent } from './dialog-share-list/dialog-share-list.component';
 import { GroupService } from '../group/group.service';
 import { Group } from '../group/group';
 import { List } from '../lists/list';
@@ -419,6 +420,33 @@ describe('ListComponent', () => {
     // Second emission (e.g. a new group was added in Firebase) — should NOT open again
     groups$.next([...MOCK_GROUPS, { id: 'g4', title: 'New', items: [] }]);
     expect(component.dialog.open).toHaveBeenCalledTimes(1);
+  });
+
+  // --- share button ---
+
+  it('should open share dialog when share button is clicked', () => {
+    const dialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    dialogRef.afterClosed.and.returnValue(of(false));
+    spyOn(component.dialog, 'open').and.returnValue(dialogRef);
+
+    component.openShareDialog();
+
+    expect(component.dialog.open).toHaveBeenCalledWith(
+      DialogShareListComponent,
+      jasmine.objectContaining({
+        width: '300px',
+        data: { listId: 'list1' },
+      })
+    );
+  });
+
+  it('should not open share dialog when list is undefined', () => {
+    component.list = undefined;
+    spyOn(component.dialog, 'open');
+
+    component.openShareDialog();
+
+    expect(component.dialog.open).not.toHaveBeenCalled();
   });
 
   // --- route param handling ---

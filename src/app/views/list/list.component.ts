@@ -14,6 +14,7 @@ import { Group } from '../group/group';
 import { GroupService } from '../group/group.service';
 import { List } from '../lists/list';
 import { DialogAddGroupComponent } from './dialog-add-group/dialog-add-group.component';
+import { DialogShareListComponent } from './dialog-share-list/dialog-share-list.component';
 import { ListService, UNGROUPED_SECTION_TITLE } from './list.service';
 
 @Component({
@@ -46,6 +47,14 @@ export class ListComponent implements OnInit {
           this.list = list;
         });
       }
+    });
+  }
+
+  openShareDialog(): void {
+    if (!this.list) return;
+    this.dialog.open(DialogShareListComponent, {
+      width: '300px',
+      data: { listId: this.list.id },
     });
   }
 
