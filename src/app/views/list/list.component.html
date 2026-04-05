@@ -1,55 +1,66 @@
-<div cdkDropListGroup>
-  <span
-    cdkDropList
-    (cdkDropListDropped)="dropTrash($event)"
-    class="material-icons trash-icon"
-    >restore_from_trash</span
-  >
-  <div class="container">
-    <div class="button-row">
-      <h1 class="title">{{ list?.title }}</h1>
-      <button (click)="openDialogAddGroup()" mat-icon-button>
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-    <div class="row" cdkDropList id="section-cards">
-      <div
-        *ngFor="let section of list?.sections; let i = index"
-        class="col-6 col-md-4"
-        cdkDrag
-        [cdkDragData]="{ type: 'section', id: section.id }"
-        [cdkDragDisabled]="isUngroupedSection(section.title)"
+<span
+  cdkDropList
+  id="trash-list"
+  (cdkDropListDropped)="dropTrash($event)"
+  class="material-icons trash-icon"
+  >restore_from_trash</span
+>
+<div class="container">
+  <div class="button-row">
+    <h1 class="title">{{ list?.title }}</h1>
+    <button (click)="openDialogAddGroup()" mat-icon-button>
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+  <div class="row">
+    <div
+      *ngFor="let section of list?.sections; let i = index"
+      class="col-6 col-md-4"
+      cdkDrag
+      [cdkDragData]="{ type: 'section', id: section.id }"
+      [cdkDragDisabled]="isUngroupedSection(section.title)"
+      cdkDropList
+      [cdkDropListConnectedTo]="['trash-list']"
+      [cdkDropListEnterPredicate]="noEnterPredicate"
+    >
+      <div class="section-header" [class.no-drag]="isUngroupedSection(section.title)" cdkDragHandle>
+        <mat-icon *ngIf="!isUngroupedSection(section.title)" class="drag-handle">drag_indicator</mat-icon>
+        <h2>{{ section.title }}</h2>
+      </div>
+      <mat-list
+        role="list"
+        cdkDropList
+        [cdkDropListData]="section.items"
+        [id]="'cdk-drop-list-section-' + section.id"
+        [cdkDropListConnectedTo]="getItemConnectedIds(section.id)"
+        (cdkDropListDropped)="dropItem($event)"
       >
-        <div class="section-header" [class.no-drag]="isUngroupedSection(section.title)" cdkDragHandle>
-          <mat-icon *ngIf="!isUngroupedSection(section.title)" class="drag-handle">drag_indicator</mat-icon>
-          <h2>{{ section.title }}</h2>
-        </div>
-        <mat-list role="list">
-          <mat-list-item *ngFor="let item of section.items">{{
-            item
-          }}</mat-list-item>
-        </mat-list>
-        <div class="add-item-row">
-          <input
-            #itemInput
-            type="text"
-            maxlength="40"
-            placeholder="New item..."
-            (keyup.enter)="
-              onAddItemToSection(section.id, itemInput.value);
-              itemInput.value = ''
-            "
-          />
-          <button
-            mat-icon-button
-            (click)="
-              onAddItemToSection(section.id, itemInput.value);
-              itemInput.value = ''
-            "
-          >
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
+        <mat-list-item
+          cdkDrag
+          [cdkDragData]="{ type: 'item', sectionId: section.id }"
+          *ngFor="let item of section.items"
+        >{{ item }}</mat-list-item>
+      </mat-list>
+      <div class="add-item-row">
+        <input
+          #itemInput
+          type="text"
+          maxlength="40"
+          placeholder="New item..."
+          (keyup.enter)="
+            onAddItemToSection(section.id, itemInput.value);
+            itemInput.value = ''
+          "
+        />
+        <button
+          mat-icon-button
+          (click)="
+            onAddItemToSection(section.id, itemInput.value);
+            itemInput.value = ''
+          "
+        >
+          <mat-icon>add</mat-icon>
+        </button>
       </div>
     </div>
   </div>

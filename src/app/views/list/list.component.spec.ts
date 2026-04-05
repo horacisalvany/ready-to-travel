@@ -134,23 +134,18 @@ describe('ListComponent', () => {
 
   // --- drag & drop setup ---
 
-  it('should have a cdkDropList on the section container', () => {
-    const sectionContainer = fixture.debugElement.query(By.css('#section-cards'));
-    expect(sectionContainer).toBeTruthy();
-    const dropList = sectionContainer.injector.get(CdkDropList, null);
-    expect(dropList).toBeTruthy();
-  });
-
-  it('should have a cdkDropList on the trash icon', () => {
+  it('should have a cdkDropList on the trash icon with explicit id', () => {
     const trashEl = fixture.debugElement.query(By.css('.trash-icon'));
     expect(trashEl).toBeTruthy();
     const dropList = trashEl.injector.get(CdkDropList, null);
     expect(dropList).toBeTruthy();
+    expect(dropList!.id).toBe('trash-list');
   });
 
-  it('should render sections as cdkDrag elements', () => {
+  it('should render sections and items as cdkDrag elements', () => {
+    // 3 sections + 4 items (2 in Packing + 2 in Electronics)
     const dragElements = fixture.debugElement.queryAll(By.css('[cdkDrag]'));
-    expect(dragElements.length).toBe(3);
+    expect(dragElements.length).toBe(7);
   });
 
   // --- ungrouped section ---
@@ -188,7 +183,7 @@ describe('ListComponent', () => {
     expect(mockListService.removeSectionFromList).toHaveBeenCalledWith('list1', 's1');
   });
 
-  it('should not remove section when drag data type is not section', () => {
+  it('should not remove section when drag data type is not section or item', () => {
     const event = {
       previousIndex: 0,
       previousContainer: { id: 'sections' },
@@ -199,6 +194,7 @@ describe('ListComponent', () => {
     component.dropTrash(event);
 
     expect(mockListService.removeSectionFromList).not.toHaveBeenCalled();
+    expect(mockListService.updateSectionItems).not.toHaveBeenCalled();
   });
 
   it('should not remove section when list is undefined', () => {
@@ -213,6 +209,102 @@ describe('ListComponent', () => {
     component.dropTrash(event);
 
     expect(mockListService.removeSectionFromList).not.toHaveBeenCalled();
+  });
+
+  // --- dropTrash for items ---
+
+  it('should remove an item when dragged to trash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'cdk-drop-list-section-s1' },
+      container: { id: 'trash' },
+      item: { data: { type: 'item', sectionId: 's1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's1',
+      ['Tickets']
+    );
+  });
+
+  it('should remove the correct item by index when dragged to trash', () => {
+    const event = {
+      previousIndex: 1,
+      previousContainer: { id: 'cdk-drop-list-section-s2' },
+      container: { id: 'trash' },
+      item: { data: { type: 'item', sectionId: 's2' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's2',
+      ['Phone']
+    );
+  });
+
+  it('should not remove item when list is undefined', () => {
+    component.list = undefined;
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'cdk-drop-list-section-s1' },
+      container: { id: 'trash' },
+      item: { data: { type: 'item', sectionId: 's1' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.updateSectionItems).not.toHaveBeenCalled();
+  });
+
+  // --- dropItem (reorder / transfer between sections) ---
+
+  it('should reorder items within the same section', () => {
+    const containerData = component.list!.sections[1].items;
+    const event = {
+      previousIndex: 0,
+      currentIndex: 1,
+      previousContainer: { id: 'cdk-drop-list-section-s1', data: containerData },
+      container: { id: 'cdk-drop-list-section-s1', data: containerData },
+    } as unknown as CdkDragDrop<string[]>;
+
+    component.dropItem(event);
+
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's1',
+      ['Tickets', 'Passport']
+    );
+  });
+
+  it('should transfer an item between sections', () => {
+    const sourceData = component.list!.sections[1].items; // s1: Packing
+    const targetData = component.list!.sections[2].items; // s2: Electronics
+    const event = {
+      previousIndex: 0,
+      currentIndex: 1,
+      previousContainer: { id: 'cdk-drop-list-section-s1', data: sourceData },
+      container: { id: 'cdk-drop-list-section-s2', data: targetData },
+    } as unknown as CdkDragDrop<string[]>;
+
+    component.dropItem(event);
+
+    // Source section updated (item removed)
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's1',
+      ['Tickets']
+    );
+    // Target section updated (item added)
+    expect(mockListService.updateSectionItems).toHaveBeenCalledWith(
+      'list1',
+      's2',
+      ['Phone', 'Passport', 'Charger']
+    );
   });
 
   // --- recentlyDropped guard ---

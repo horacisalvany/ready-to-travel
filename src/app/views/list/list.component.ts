@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  DragDropModule,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs/operators';
@@ -80,13 +85,70 @@ export class ListComponent implements OnInit {
   dropTrash(event: CdkDragDrop<any>): void {
     this.markRecentlyDropped();
     const dragData = event.item.data;
-    if (dragData?.type === 'section' && this.list) {
+    if (!this.list) return;
+
+    if (dragData?.type === 'section') {
       const section = this.list.sections.find((s) => s.id === dragData.id);
       if (section && this.isUngroupedSection(section.title)) return;
       this.listService
         .removeSectionFromList(this.list.id, dragData.id)
         .subscribe();
+      return;
     }
+
+    if (dragData?.type === 'item') {
+      const section = this.list.sections.find(
+        (s) => s.id === dragData.sectionId
+      );
+      if (section) {
+        section.items.splice(event.previousIndex, 1);
+        this.listService
+          .updateSectionItems(this.list.id, section.id, section.items)
+          .subscribe();
+      }
+    }
+  }
+
+  dropItem(event: CdkDragDrop<string[]>): void {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+      const prevSectionId = this.resolveSectionId(event.previousContainer.id);
+      const prevSection = this.list?.sections.find((s) => s.id === prevSectionId);
+      if (prevSection && this.list) {
+        this.listService
+          .updateSectionItems(this.list.id, prevSection.id, prevSection.items)
+          .subscribe();
+      }
+    }
+
+    const sectionId = this.resolveSectionId(event.container.id);
+    const section = this.list?.sections.find((s) => s.id === sectionId);
+    if (section && this.list) {
+      this.listService
+        .updateSectionItems(this.list.id, section.id, section.items)
+        .subscribe();
+    }
+  }
+
+  noEnterPredicate = () => false;
+
+  getItemConnectedIds(sectionId: string): string[] {
+    if (!this.list) return ['trash-list'];
+    const otherIds = this.list.sections
+      .filter((s) => s.id !== sectionId)
+      .map((s) => 'cdk-drop-list-section-' + s.id);
+    return ['trash-list', ...otherIds];
+  }
+
+  private resolveSectionId(containerId: string): string {
+    return containerId.replace('cdk-drop-list-section-', '');
   }
 
   private markRecentlyDropped(): void {
