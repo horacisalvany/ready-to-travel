@@ -41,9 +41,11 @@ describe('ListComponent', () => {
   beforeEach(async () => {
     mockListService = jasmine.createSpyObj('ListService', [
       'getList',
+      'getSharedList',
       'addSectionToList',
       'removeSectionFromList',
       'updateSectionItems',
+      'updateSharedSectionItems',
     ]);
     mockListService.getList.and.returnValue(
       of({
@@ -54,6 +56,8 @@ describe('ListComponent', () => {
     mockListService.addSectionToList.and.returnValue(of('newSectionId'));
     mockListService.removeSectionFromList.and.returnValue(of(undefined));
     mockListService.updateSectionItems.and.returnValue(of(undefined));
+    mockListService.getSharedList.and.returnValue(of({...MOCK_LIST, isShared: true, sections: MOCK_LIST.sections.map(s => ({...s, items: [...s.items]}))}));
+    mockListService.updateSharedSectionItems.and.returnValue(of(undefined));
 
     mockGroupService = jasmine.createSpyObj('GroupService', ['getGroups']);
     mockGroupService.getGroups.and.returnValue(
@@ -69,6 +73,7 @@ describe('ListComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({ get: () => 'list1' }),
+            data: of({}),
           },
         },
       ],
@@ -449,6 +454,12 @@ describe('ListComponent', () => {
     expect(component.dialog.open).not.toHaveBeenCalled();
   });
 
+  // --- shared mode ---
+
+  it('should have isShared false by default', () => {
+    expect(component.isShared).toBeFalse();
+  });
+
   // --- route param handling ---
 
   it('should not call getList when route param id is null', async () => {
@@ -464,6 +475,7 @@ describe('ListComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({ get: () => null }),
+            data: of({}),
           },
         },
       ],

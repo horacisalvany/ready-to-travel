@@ -156,4 +156,36 @@ export class ListService {
       })
     );
   }
+
+  getSharedList(id: string): Observable<List | undefined> {
+    return this.db
+      .object(`sharedLists/${id}`)
+      .valueChanges()
+      .pipe(
+        map((data: any) => {
+          if (!data) return undefined;
+          return {
+            id,
+            title: data.title,
+            sections: this.parseSections(data.sections),
+            ownerUid: data.ownerUid,
+            ownerEmail: data.ownerEmail,
+            sharedWith: data.sharedWith,
+            isShared: true,
+          } as List;
+        })
+      );
+  }
+
+  updateSharedSectionItems(
+    listId: string,
+    sectionId: string,
+    items: string[]
+  ): Observable<void> {
+    return from(
+      this.db
+        .object(`sharedLists/${listId}/sections/${sectionId}`)
+        .update({ items })
+    );
+  }
 }
