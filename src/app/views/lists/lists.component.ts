@@ -3,7 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from 'src/app/material.module';
+import { AuthService } from '../../services/auth.service';
 import { ListService } from '../list/list.service';
 import { ShareService } from '../../services/share.service';
 import { DialogAddListComponent } from './dialog-add-list/dialog-add-list.component';
@@ -19,16 +21,22 @@ import { List } from './list';
 export class ListsComponent implements OnInit {
   lists: List[] = [];
   sharedLists: List[] = [];
+  currentUserUid: string | null = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     public dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private authService: AuthService,
     private listService: ListService,
     private shareService: ShareService
   ) {}
 
   ngOnInit(): void {
+    this.authService.user$.subscribe((user) => {
+      this.currentUserUid = user?.uid ?? null;
+    });
     this.listService.getLists().subscribe((lists) => (this.lists = lists));
     this.shareService.getSharedLists().subscribe((lists) => (this.sharedLists = lists));
   }
@@ -46,10 +54,21 @@ export class ListsComponent implements OnInit {
   }
 
   dropTrash(event: CdkDragDrop<any>) {
-    const listId = event.item.data;
-    if (listId) {
-      this.listService.deleteList(listId).subscribe();
+    const dragData = event.item.data;
+    if (!dragData) return;
+
+    // Shared list drag data: { type: 'shared', id, ownerUid }
+    if (dragData.type === 'shared') {
+      if (dragData.ownerUid !== this.currentUserUid) {
+        this.snackBar.open('Only the list creator can delete a shared list', 'OK', { duration: 3000 });
+        return;
+      }
+      this.shareService.deleteSharedList(dragData.id).subscribe();
+      return;
     }
+
+    // Personal list drag data: plain string id
+    this.listService.deleteList(dragData).subscribe();
   }
 
   dropList(_event: CdkDragDrop<any>) {

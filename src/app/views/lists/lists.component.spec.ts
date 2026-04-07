@@ -3,9 +3,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { of } from 'rxjs';
 import { ListsComponent } from './lists.component';
+import { AuthService } from '../../services/auth.service';
 import { ListService } from '../list/list.service';
 import { ShareService } from '../../services/share.service';
 import { List } from './list';
@@ -20,6 +23,8 @@ describe('ListsComponent', () => {
   let fixture: ComponentFixture<ListsComponent>;
   let mockListService: jasmine.SpyObj<ListService>;
   let mockShareService: jasmine.SpyObj<ShareService>;
+  let mockAuthService: any;
+  let snackBar: MatSnackBar;
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
@@ -34,8 +39,13 @@ describe('ListsComponent', () => {
     mockListService.addList.and.returnValue(of('newKey'));
     mockListService.deleteList.and.returnValue(of(undefined));
 
-    mockShareService = jasmine.createSpyObj('ShareService', ['getSharedLists']);
+    mockShareService = jasmine.createSpyObj('ShareService', ['getSharedLists', 'deleteSharedList']);
     mockShareService.getSharedLists.and.returnValue(of([]));
+    mockShareService.deleteSharedList.and.returnValue(of(undefined));
+
+    mockAuthService = {
+      user$: of({ uid: 'currentUid', email: 'me@test.com' }),
+    };
 
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -46,10 +56,12 @@ describe('ListsComponent', () => {
         MatListModule,
         MatIconModule,
         DragDropModule,
+        NoopAnimationsModule,
       ],
       providers: [
         { provide: ListService, useValue: mockListService },
         { provide: ShareService, useValue: mockShareService },
+        { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
         {
           provide: ActivatedRoute,
@@ -62,6 +74,8 @@ describe('ListsComponent', () => {
 
     fixture = TestBed.createComponent(ListsComponent);
     component = fixture.componentInstance;
+    snackBar = (component as any).snackBar;
+    spyOn(snackBar, 'open');
     fixture.detectChanges();
   });
 
@@ -172,5 +186,52 @@ describe('ListsComponent', () => {
       ['shared', 'sl1'],
       jasmine.any(Object)
     );
+  });
+
+  // --- dropTrash shared lists ---
+
+  it('should delete shared list when owner drags to trash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'shared-lists' },
+      container: { id: 'trash' },
+      item: { data: { type: 'shared', id: 'sl1', ownerUid: 'currentUid' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockShareService.deleteSharedList).toHaveBeenCalledWith('sl1');
+  });
+
+  it('should show snackbar and not delete when non-owner drags shared list to trash', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'shared-lists' },
+      container: { id: 'trash' },
+      item: { data: { type: 'shared', id: 'sl1', ownerUid: 'someoneElse' } },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockShareService.deleteSharedList).not.toHaveBeenCalled();
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Only the list creator can delete a shared list',
+      'OK',
+      jasmine.any(Object)
+    );
+  });
+
+  it('should not delete when drag data is null', () => {
+    const event = {
+      previousIndex: 0,
+      previousContainer: { id: 'lists-container' },
+      container: { id: 'trash' },
+      item: { data: null },
+    } as unknown as CdkDragDrop<any>;
+
+    component.dropTrash(event);
+
+    expect(mockListService.deleteList).not.toHaveBeenCalled();
+    expect(mockShareService.deleteSharedList).not.toHaveBeenCalled();
   });
 });

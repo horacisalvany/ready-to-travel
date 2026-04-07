@@ -100,6 +100,42 @@ describe('ShareService', () => {
     });
   });
 
+  describe('deleteSharedList', () => {
+    it('should remove the shared list and all user references', (done) => {
+      const sharedListData = {
+        title: 'Beach Trip',
+        ownerUid: 'ownerUid',
+        ownerEmail: 'owner@test.com',
+        sharedWith: { friendUid: 'friend@test.com' },
+      };
+
+      mockDb.object.and.callFake((path: string) => {
+        const obj = jasmine.createSpyObj('AngularFireObject', [
+          'valueChanges',
+          'remove',
+        ]);
+        obj.remove.and.returnValue(Promise.resolve());
+        if (path === 'sharedLists/list1') {
+          obj.valueChanges.and.returnValue(of(sharedListData));
+        }
+        return obj;
+      });
+
+      service.deleteSharedList('list1').subscribe({
+        next: () => {
+          const paths = (mockDb.object as jasmine.Spy).calls
+            .allArgs()
+            .map((args: any[]) => args[0]);
+          expect(paths).toContain('sharedLists/list1');
+          expect(paths).toContain('users/ownerUid/sharedListIds/list1');
+          expect(paths).toContain('users/friendUid/sharedListIds/list1');
+          done();
+        },
+        error: done.fail,
+      });
+    });
+  });
+
   describe('getSharedLists', () => {
     it('should return empty array when no shared lists', (done) => {
       mockDbObject.valueChanges.and.returnValue(of(null));

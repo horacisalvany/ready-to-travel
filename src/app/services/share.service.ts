@@ -90,6 +90,47 @@ export class ShareService {
     );
   }
 
+  deleteSharedList(listId: string): Observable<void> {
+    return this.authService.user$.pipe(
+      take(1),
+      switchMap((user) => {
+        if (!user) return of(undefined as void);
+
+        // Read the shared list to get all users who have references
+        return this.db
+          .object(`sharedLists/${listId}`)
+          .valueChanges()
+          .pipe(
+            take(1),
+            switchMap((data: any) => {
+              if (!data) return of(undefined as void);
+
+              // Collect all UIDs that have references: owner + all sharedWith users
+              const uids = new Set<string>();
+              if (data.ownerUid) uids.add(data.ownerUid);
+              if (data.sharedWith) {
+                Object.keys(data.sharedWith).forEach((uid) => uids.add(uid));
+              }
+
+              // Remove sharedListIds reference for every user + remove the shared list itself
+              const removals = Array.from(uids).map((uid) =>
+                from(
+                  this.db
+                    .object(`users/${uid}/sharedListIds/${listId}`)
+                    .remove()
+                )
+              );
+              removals.push(
+                from(this.db.object(`sharedLists/${listId}`).remove())
+              );
+
+              return forkJoin(removals).pipe(map(() => undefined as void));
+            })
+          );
+      })
+    );
+  }
+
   unshareList(listId: string, targetUid: string): Observable<void> {
     return forkJoin([
       from(
